@@ -11,24 +11,28 @@ namespace Image_Processing_Lab
 {
     class OtsuMethod : ImageProcessing
     {
-        // возможно нужно сделать некий конструктор и поля типа Bitmap sourceImage и массива intensity (то, что может понадобиться в разных местах)
+        private int[] intensityArray;
 
-        protected override Color CalculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        public OtsuMethod(Bitmap image) : base(image)
         {
-            Color color = new Color();
+            CalculateIntensity();
+        }
+
+        protected override Color CalculateNewPixelColor(int x, int y)
+        {
+            int grayGrad = intensityArray[(y + 1) * sourceImage.Width + x];
+            Color color = Color.FromArgb(grayGrad, grayGrad, grayGrad);
             // TODO : write method
             return color;
         }
 
-        private int[] CalculateIntensity(Bitmap sourceImage)
+        private void CalculateIntensity()
         {
-            int[] intensityArray;
             int sizeOfArray = sourceImage.Height * sourceImage.Width;
             intensityArray = new int[sizeOfArray];
             for (int i = 0; i < sourceImage.Height; i++)
                 for (int j = 0; j < sourceImage.Width; j++)
-                    intensityArray[(i + 1) * sourceImage.Width + j] = (int)(0.2126 * sourceImage.GetPixel(i, j).R + 0.7152 * sourceImage.GetPixel(i, j).G + 0.0722 * sourceImage.GetPixel(i, j).B);
-            return intensityArray;
+                    intensityArray[i * sourceImage.Width + j] = (int)(0.2126 * sourceImage.GetPixel(j, i).R + 0.7152 * sourceImage.GetPixel(j, i).G + 0.0722 * sourceImage.GetPixel(j, i).B);
         }
     }
 }

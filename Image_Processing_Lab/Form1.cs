@@ -22,7 +22,7 @@ namespace Image_Processing_Lab
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            cancelButton.Enabled = false;
         }
 
         private void SetWindowSize()
@@ -96,16 +96,18 @@ namespace Image_Processing_Lab
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            image = ((ImageProcessing)e.Argument).ImageProcess(image, backgroundWorker1);
+            image = ((ImageProcessing)e.Argument).ImageProcess(backgroundWorker1);
         }
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
+            cancelButton.Enabled = true;
             progressBar1.Value = e.ProgressPercentage;
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            cancelButton.Enabled = false;
             pictureBox1.Image = image;
             pictureBox1.Refresh();
             progressBar1.Value = 0;
@@ -113,7 +115,14 @@ namespace Image_Processing_Lab
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
+            cancelButton.Enabled = false;
             backgroundWorker1.CancelAsync();
+        }
+
+        private void otsuMethodToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ImageProcessing otsuMethod = new OtsuMethod(image);
+            backgroundWorker1.RunWorkerAsync(otsuMethod);
         }
 
     }

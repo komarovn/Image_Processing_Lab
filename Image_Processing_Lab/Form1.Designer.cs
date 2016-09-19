@@ -38,6 +38,8 @@
             this.cancelButton = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.segmentationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.otsuMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -45,7 +47,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.segmentationToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(856, 24);
@@ -112,6 +115,31 @@
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
+            // segmentationToolStripMenuItem
+            // 
+            this.segmentationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.otsuMethodToolStripMenuItem});
+            this.segmentationToolStripMenuItem.Name = "segmentationToolStripMenuItem";
+            this.segmentationToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
+            this.segmentationToolStripMenuItem.Text = "Segmentation";
+            // 
+            // otsuMethodToolStripMenuItem
+            // 
+            this.otsuMethodToolStripMenuItem.Name = "otsuMethodToolStripMenuItem";
+            this.otsuMethodToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.O)));
+            this.otsuMethodToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.otsuMethodToolStripMenuItem.Text = "Otsu Method";
+            this.otsuMethodToolStripMenuItem.Click += new System.EventHandler(this.otsuMethodToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -147,6 +175,8 @@
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.ToolStripMenuItem segmentationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem otsuMethodToolStripMenuItem;
     }
 }
 

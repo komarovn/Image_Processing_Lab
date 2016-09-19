@@ -11,6 +11,13 @@ namespace Image_Processing_Lab
 {
     abstract class ImageProcessing
     {
+        protected Bitmap sourceImage;
+
+        public ImageProcessing(Bitmap image)
+        {
+            sourceImage = image;
+        }
+
         public int Clamp(int value, int min, int max)
         {
             if (value < min)
@@ -20,9 +27,9 @@ namespace Image_Processing_Lab
             return value;
         }
         
-        protected abstract Color CalculateNewPixelColor(Bitmap sourceImage, int x, int y);
+        protected abstract Color CalculateNewPixelColor(int x, int y);
 
-        public Bitmap ImageProcess(Bitmap sourceImage, BackgroundWorker worker)
+        public Bitmap ImageProcess(BackgroundWorker worker)
         {
             Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
             for (int i = 0; i < sourceImage.Width; i++)
@@ -31,7 +38,7 @@ namespace Image_Processing_Lab
                 {
                     worker.ReportProgress((int)((float)i / resultImage.Width * 100));
                     for (int j = 0; j < sourceImage.Height; j++)
-                        resultImage.SetPixel(i, j, CalculateNewPixelColor(sourceImage, i, j));
+                        resultImage.SetPixel(i, j, CalculateNewPixelColor(i, j));
                 };
             };
             if (worker.CancellationPending)
