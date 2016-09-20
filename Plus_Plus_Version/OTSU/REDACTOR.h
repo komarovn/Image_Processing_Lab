@@ -49,6 +49,7 @@ namespace OTSU{
 	private: System::Windows::Forms::ToolStripMenuItem^  ìåòîäûToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  áèíîğèçàöèÿToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  ìåòîäÎòñóToolStripMenuItem;
+	private: System::Windows::Forms::Label^  label1;
 
 
 	protected: 
@@ -66,6 +67,7 @@ namespace OTSU{
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(REDACTOR::typeid));
 			this->PCTB_Central_image = (gcnew System::Windows::Forms::PictureBox());
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->ôàéëToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -74,16 +76,16 @@ namespace OTSU{
 			this->ìåòîäûToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->áèíîğèçàöèÿToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->ìåòîäÎòñóToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->label1 = (gcnew System::Windows::Forms::Label());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->PCTB_Central_image))->BeginInit();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// PCTB_Central_image
 			// 
-			this->PCTB_Central_image->Location = System::Drawing::Point(12, 21);
+			this->PCTB_Central_image->Location = System::Drawing::Point(12, 38);
 			this->PCTB_Central_image->Name = L"PCTB_Central_image";
-			this->PCTB_Central_image->Size = System::Drawing::Size(444, 352);
-			this->PCTB_Central_image->SizeMode = System::Windows::Forms::PictureBoxSizeMode::Zoom;
+			this->PCTB_Central_image->Size = System::Drawing::Size(832, 519);
 			this->PCTB_Central_image->TabIndex = 1;
 			this->PCTB_Central_image->TabStop = false;
 			// 
@@ -93,7 +95,7 @@ namespace OTSU{
 				this->ìåòîäûToolStripMenuItem});
 			this->menuStrip1->Location = System::Drawing::Point(0, 0);
 			this->menuStrip1->Name = L"menuStrip1";
-			this->menuStrip1->Size = System::Drawing::Size(624, 24);
+			this->menuStrip1->Size = System::Drawing::Size(856, 24);
 			this->menuStrip1->TabIndex = 2;
 			this->menuStrip1->Text = L"menuStrip1";
 			// 
@@ -102,53 +104,68 @@ namespace OTSU{
 			this->ôàéëToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->çàãğóçèòüToolStripMenuItem, 
 				this->ñîõğàíèòüToolStripMenuItem});
 			this->ôàéëToolStripMenuItem->Name = L"ôàéëToolStripMenuItem";
-			this->ôàéëToolStripMenuItem->Size = System::Drawing::Size(48, 20);
-			this->ôàéëToolStripMenuItem->Text = L"Ôàéë";
+			this->ôàéëToolStripMenuItem->Size = System::Drawing::Size(37, 20);
+			this->ôàéëToolStripMenuItem->Text = L"File";
 			// 
 			// çàãğóçèòüToolStripMenuItem
 			// 
 			this->çàãğóçèòüToolStripMenuItem->Name = L"çàãğóçèòüToolStripMenuItem";
-			this->çàãğóçèòüToolStripMenuItem->Size = System::Drawing::Size(132, 22);
-			this->çàãğóçèòüToolStripMenuItem->Text = L"Çàãğóçèòü";
+			this->çàãğóçèòüToolStripMenuItem->ShortcutKeys = static_cast<System::Windows::Forms::Keys>((System::Windows::Forms::Keys::Control | System::Windows::Forms::Keys::O));
+			this->çàãğóçèòüToolStripMenuItem->Size = System::Drawing::Size(176, 22);
+			this->çàãğóçèòüToolStripMenuItem->Text = L"Open File...";
 			this->çàãğóçèòüToolStripMenuItem->Click += gcnew System::EventHandler(this, &REDACTOR::çàãğóçèòüToolStripMenuItem_Click);
 			// 
 			// ñîõğàíèòüToolStripMenuItem
 			// 
 			this->ñîõğàíèòüToolStripMenuItem->Name = L"ñîõğàíèòüToolStripMenuItem";
-			this->ñîõğàíèòüToolStripMenuItem->Size = System::Drawing::Size(132, 22);
-			this->ñîõğàíèòüToolStripMenuItem->Text = L"Ñîõğàíèòü";
+			this->ñîõğàíèòüToolStripMenuItem->ShortcutKeys = static_cast<System::Windows::Forms::Keys>((System::Windows::Forms::Keys::Control | System::Windows::Forms::Keys::S));
+			this->ñîõğàíèòüToolStripMenuItem->Size = System::Drawing::Size(176, 22);
+			this->ñîõğàíèòüToolStripMenuItem->Text = L"Save As...";
 			// 
 			// ìåòîäûToolStripMenuItem
 			// 
 			this->ìåòîäûToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->áèíîğèçàöèÿToolStripMenuItem});
 			this->ìåòîäûToolStripMenuItem->Name = L"ìåòîäûToolStripMenuItem";
-			this->ìåòîäûToolStripMenuItem->Size = System::Drawing::Size(63, 20);
-			this->ìåòîäûToolStripMenuItem->Text = L"Ìåòîäû";
+			this->ìåòîäûToolStripMenuItem->Size = System::Drawing::Size(66, 20);
+			this->ìåòîäûToolStripMenuItem->Text = L"Methods";
 			// 
 			// áèíîğèçàöèÿToolStripMenuItem
 			// 
 			this->áèíîğèçàöèÿToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->ìåòîäÎòñóToolStripMenuItem});
 			this->áèíîğèçàöèÿToolStripMenuItem->Name = L"áèíîğèçàöèÿToolStripMenuItem";
-			this->áèíîğèçàöèÿToolStripMenuItem->Size = System::Drawing::Size(152, 22);
-			this->áèíîğèçàöèÿToolStripMenuItem->Text = L"Áèíàğèçàöèÿ";
+			this->áèíîğèçàöèÿToolStripMenuItem->Size = System::Drawing::Size(148, 22);
+			this->áèíîğèçàöèÿToolStripMenuItem->Text = L"Segmentation";
 			// 
 			// ìåòîäÎòñóToolStripMenuItem
 			// 
 			this->ìåòîäÎòñóToolStripMenuItem->Name = L"ìåòîäÎòñóToolStripMenuItem";
-			this->ìåòîäÎòñóToolStripMenuItem->Size = System::Drawing::Size(152, 22);
-			this->ìåòîäÎòñóToolStripMenuItem->Text = L"Ìåòîä Îòñó";
+			this->ìåòîäÎòñóToolStripMenuItem->ShortcutKeys = static_cast<System::Windows::Forms::Keys>(((System::Windows::Forms::Keys::Control | System::Windows::Forms::Keys::Shift) 
+				| System::Windows::Forms::Keys::O));
+			this->ìåòîäÎòñóToolStripMenuItem->Size = System::Drawing::Size(219, 22);
+			this->ìåòîäÎòñóToolStripMenuItem->Text = L"Otsu Method";
 			this->ìåòîäÎòñóToolStripMenuItem->Click += gcnew System::EventHandler(this, &REDACTOR::ìåòîäÎòñóToolStripMenuItem_Click);
+			// 
+			// label1
+			// 
+			this->label1->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			this->label1->Location = System::Drawing::Point(0, 24);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(872, 1);
+			this->label1->TabIndex = 3;
 			// 
 			// REDACTOR
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(624, 385);
+			this->ClientSize = System::Drawing::Size(856, 569);
+			this->Controls->Add(this->label1);
 			this->Controls->Add(this->PCTB_Central_image);
 			this->Controls->Add(this->menuStrip1);
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
+			this->Icon = (cli::safe_cast<System::Drawing::Icon^  >(resources->GetObject(L"$this.Icon")));
 			this->MainMenuStrip = this->menuStrip1;
 			this->Name = L"REDACTOR";
-			this->Text = L"REDACTOR";
+			this->Text = L"Image Processing";
 			this->Load += gcnew System::EventHandler(this, &REDACTOR::REDACTOR_Load);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->PCTB_Central_image))->EndInit();
 			this->menuStrip1->ResumeLayout(false);
@@ -174,10 +191,10 @@ namespace OTSU{
 				 if(dialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 				 {
 					 image = gcnew Bitmap(dialog->FileName);
+					 SetWindowSize();
+					 PCTB_Central_image->Image = gcnew Bitmap(image);
+					 PCTB_Central_image->Refresh();
 				 }
-
-				 PCTB_Central_image -> Image = gcnew Bitmap(image);
-				 PCTB_Central_image -> Refresh();
 			 }
 
 	private: System::Void ìåòîäÎòñóToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 
@@ -187,5 +204,32 @@ namespace OTSU{
 				 PCTB_Central_image->Image = gcnew Bitmap(image);
 				 delete Filter;
 			 }
+
+	private: void SetWindowSize()
+        {
+            if (image == nullptr)
+                return;
+            if (image->Width <= 1920 - 42) // changing size of window depending on size of loaded image
+            {
+                Width = image->Width + 42;
+				PCTB_Central_image->Width = image->Width;
+            }
+            else
+            {
+                Width = 1920;
+				PCTB_Central_image->Width = 1920 - 42;
+            }
+            if (image->Height <= 1080 - 128)
+            {
+                Height = image->Height + 128;
+				PCTB_Central_image->Height = image->Height;
+            }
+            else
+            {
+                Height = 1080;
+				PCTB_Central_image->Height = 1080 - 128;
+            }
+            label1->Width = Width;
+        }
 };
 }
