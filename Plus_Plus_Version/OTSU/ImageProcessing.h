@@ -13,7 +13,7 @@ using namespace System::Drawing;
 class ImageProcessing abstract 
 {
 protected: 
-	gcroot <Bitmap> sourceImage;
+	gcroot <Bitmap^> sourceImage;
 	virtual Color CalculateNewPixelColor(int x, int y) = 0;
 
 public:
@@ -33,10 +33,10 @@ public:
 public:
 	Bitmap^ ProcessImage()
 	{
-		Bitmap^ resultImage = gcnew Bitmap(sourseImage->Width, sourseImage->Height);
-		for (int i = 0; i < sourseImage->Width; i++)
+		Bitmap^ resultImage = gcnew Bitmap(sourceImage->Width, sourceImage->Height);
+		for (int i = 0; i < sourceImage->Width; i++)
 		{
-			for (int j = 0; j < sourseImage->Height; j++)
+			for (int j = 0; j < sourceImage->Height; j++)
 			{
 				resultImage->SetPixel(i, j, CalculateNewPixelColor(i, j));
 			}
@@ -45,15 +45,16 @@ public:
 	}
 };
 
-
+/*
 // Это по идее не нужно больше 
-class GrayScaleFilter: protected ImageProcessing 
+class GrayScaleFilter: public ImageProcessing 
 {
 	Color calculateNewPixelColor(int x, int y) 
 	{
-		Color^ sourseColor = sourseImage->GetPixel(x, y);
-		int Intensity = (int)(0.36 * sourseColor->R + 0.53 * sourseColor->G + 0.11 * sourseColor->B);
+		Color sourseColor = sourceImage->GetPixel(x, y);
+		int Intensity = (int)(0.36 * sourseColor.R + 0.53 * sourseColor.G + 0.11 * sourseColor.B);
 		Color resulteColor = Color().FromArgb(Intensity, Intensity, Intensity);
 		return resulteColor;
 	}
 };
+*/

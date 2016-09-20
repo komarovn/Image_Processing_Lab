@@ -197,10 +197,10 @@ namespace OTSU{
 
 	private: System::Void ìåòîäÎòñóToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 
 			 {
-				 ImageProcessing* Filter = new GrayScaleFilter();
-				 image = Filter->ProcessImage(image);
+				 ImageProcessing* otsuMethod = new OtsuMethod(image);
+				 image = otsuMethod->ProcessImage();
 				 PCTB_Central_image->Image = gcnew Bitmap(image);
-				 delete Filter;
+				 delete otsuMethod;
 			 }
 
 	private: void SetWindowSize()
