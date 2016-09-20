@@ -11,9 +11,6 @@ namespace OTSU{
 	using namespace System::Data;
 	using namespace System::Drawing;
 
-
-
-
 	/// <summary>
 	/// Summary for REDACTOR
 	/// </summary>
@@ -121,6 +118,7 @@ namespace OTSU{
 			this->ñîõðàíèòüToolStripMenuItem->ShortcutKeys = static_cast<System::Windows::Forms::Keys>((System::Windows::Forms::Keys::Control | System::Windows::Forms::Keys::S));
 			this->ñîõðàíèòüToolStripMenuItem->Size = System::Drawing::Size(176, 22);
 			this->ñîõðàíèòüToolStripMenuItem->Text = L"Save As...";
+			this->ñîõðàíèòüToolStripMenuItem->Click += gcnew System::EventHandler(this, &REDACTOR::ñîõðàíèòüToolStripMenuItem_Click);
 			// 
 			// ìåòîäûToolStripMenuItem
 			// 
@@ -180,7 +178,6 @@ namespace OTSU{
 				 image = gcnew Bitmap(1, 1);
 				 PCTB_Central_image -> Image = gcnew Bitmap(image);
 				 PCTB_Central_image -> Refresh();
-
 			 }
 
 	private: System::Void çàãðóçèòüToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 
@@ -231,5 +228,28 @@ namespace OTSU{
             }
             label1->Width = Width;
         }
+private: System::Void ñîõðàíèòüToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+			SaveFileDialog ^saveFileDialog1 = gcnew SaveFileDialog();
+            saveFileDialog1->Filter = "JPEG Image | *.jpg | PNG Image | *.png | Bitmap Image | *.bmp";
+            saveFileDialog1->Title = "Save As...";
+            saveFileDialog1->ShowDialog();
+            if (saveFileDialog1->FileName != "")
+            {
+                System::IO::FileStream ^fs = (System::IO::FileStream ^)saveFileDialog1->OpenFile();
+                switch (saveFileDialog1->FilterIndex)
+                {
+                    case 1:
+						this->PCTB_Central_image->Image->Save(fs, Imaging::ImageFormat::Jpeg);
+                        break;
+                    case 2:
+                        this->PCTB_Central_image->Image->Save(fs, Imaging::ImageFormat::Png);
+                        break;
+                    case 3:
+                        this->PCTB_Central_image->Image->Save(fs, Imaging::ImageFormat::Bmp);
+                        break;
+                }
+                fs->Close();
+            };
+		 }
 };
 }
