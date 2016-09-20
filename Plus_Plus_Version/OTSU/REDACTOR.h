@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ImageProcessing.h"
+#include "OtsuMethod.h"
 
 namespace OTSU{
 

@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImageProcessing.cpp" />
+    <ClCompile Include="OtsuMethod.cpp" />
     <ClCompile Include="REDACTOR.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -91,6 +92,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="OtsuMethod.h" />
     <ClInclude Include="ImageProcessing.h" />
     <ClInclude Include="REDACTOR.h">
       <FileType>CppForm</FileType>

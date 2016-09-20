@@ -21,12 +21,18 @@
     <ClCompile Include="ImageProcessing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OtsuMethod.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="REDACTOR.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ImageProcessing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OtsuMethod.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
