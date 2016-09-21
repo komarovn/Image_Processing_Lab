@@ -12,32 +12,20 @@ using namespace System::Drawing;
 class OtsuMethod : public ImageProcessing
     {
 	private:
-		//int* intensityArray;
         int* histogram;
 		int dawn;
-		/*void CalculateIntensity()
-        {
-            int sizeOfArray = sourceImage->Height * sourceImage->Width;
-            intensityArray = new int[sizeOfArray];
-            for (int i = 0; i < sourceImage->Height; i++)
-                for (int j = 0; j < sourceImage->Width; j++)
-                    intensityArray[i * sourceImage->Width + j] = (int)(0.2126 * sourceImage->GetPixel(j, i).R + 0.7152 * sourceImage->GetPixel(j, i).G + 0.0722 * sourceImage->GetPixel(j, i).B);
-        }*/
 	protected:
 		Color CalculateNewPixelColor(int x, int y)
         {
-            //int grayGrad = intensityArray[(y + 1) * sourceImage->Width + x];
 			int intens = (int)(0.2126 * sourceImage->GetPixel(x, y).R + 0.7152 * sourceImage->GetPixel(x, y).G + 0.0722 * sourceImage->GetPixel(x, y).B);
 			int grayGrad = MakeBinarized(dawn, intens);
             Color color = Color::FromArgb(grayGrad, grayGrad, grayGrad);
-            // TODO : write method
             return color;
         }
 
 	public:
 		OtsuMethod(Bitmap ^image) : ImageProcessing(image)
         {
-            //CalculateIntensity();
 			CalculateHistogram();
 
 			int disp = 0; // мат. ожидание 
@@ -78,7 +66,6 @@ class OtsuMethod : public ImageProcessing
 
 		~OtsuMethod()
 		{
-			//delete[] intensityArray;
 			delete[] histogram;
 		}
 

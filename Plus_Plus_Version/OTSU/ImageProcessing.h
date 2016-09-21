@@ -44,17 +44,3 @@ public:
 		return resultImage;
 	}
 };
-
-/*
-// Это по идее не нужно больше 
-class GrayScaleFilter: public ImageProcessing 
-{
-	Color calculateNewPixelColor(int x, int y) 
-	{
-		Color sourseColor = sourceImage->GetPixel(x, y);
-		int Intensity = (int)(0.36 * sourseColor.R + 0.53 * sourseColor.G + 0.11 * sourseColor.B);
-		Color resulteColor = Color().FromArgb(Intensity, Intensity, Intensity);
-		return resulteColor;
-	}
-};
-*/
