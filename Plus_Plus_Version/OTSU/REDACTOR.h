@@ -2,6 +2,7 @@
 
 #include "ImageProcessing.h"
 #include "OtsuMethod.h"
+#include "KMeansMethod.h"
 
 namespace OTSU{
 
@@ -48,6 +49,8 @@ namespace OTSU{
 	private: System::Windows::Forms::ToolStripMenuItem^  áèíîðèçàöèÿToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  ìåòîäÎòñóToolStripMenuItem;
 	private: System::Windows::Forms::Label^  label1;
+	private: System::Windows::Forms::ToolStripMenuItem^  segmentationToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  kMeansMethodToolStripMenuItem;
 
 
 	protected: 
@@ -75,6 +78,8 @@ namespace OTSU{
 			this->áèíîðèçàöèÿToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->ìåòîäÎòñóToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->segmentationToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->kMeansMethodToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->PCTB_Central_image))->BeginInit();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -123,7 +128,8 @@ namespace OTSU{
 			// 
 			// ìåòîäûToolStripMenuItem
 			// 
-			this->ìåòîäûToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->áèíîðèçàöèÿToolStripMenuItem});
+			this->ìåòîäûToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->áèíîðèçàöèÿToolStripMenuItem, 
+				this->segmentationToolStripMenuItem});
 			this->ìåòîäûToolStripMenuItem->Name = L"ìåòîäûToolStripMenuItem";
 			this->ìåòîäûToolStripMenuItem->Size = System::Drawing::Size(66, 20);
 			this->ìåòîäûToolStripMenuItem->Text = L"Methods";
@@ -132,8 +138,8 @@ namespace OTSU{
 			// 
 			this->áèíîðèçàöèÿToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->ìåòîäÎòñóToolStripMenuItem});
 			this->áèíîðèçàöèÿToolStripMenuItem->Name = L"áèíîðèçàöèÿToolStripMenuItem";
-			this->áèíîðèçàöèÿToolStripMenuItem->Size = System::Drawing::Size(148, 22);
-			this->áèíîðèçàöèÿToolStripMenuItem->Text = L"Segmentation";
+			this->áèíîðèçàöèÿToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->áèíîðèçàöèÿToolStripMenuItem->Text = L"Binarization";
 			// 
 			// ìåòîäÎòñóToolStripMenuItem
 			// 
@@ -151,6 +157,22 @@ namespace OTSU{
 			this->label1->Name = L"label1";
 			this->label1->Size = System::Drawing::Size(872, 1);
 			this->label1->TabIndex = 3;
+			// 
+			// segmentationToolStripMenuItem
+			// 
+			this->segmentationToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->kMeansMethodToolStripMenuItem});
+			this->segmentationToolStripMenuItem->Name = L"segmentationToolStripMenuItem";
+			this->segmentationToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->segmentationToolStripMenuItem->Text = L"Segmentation";
+			// 
+			// kMeansMethodToolStripMenuItem
+			// 
+			this->kMeansMethodToolStripMenuItem->Name = L"kMeansMethodToolStripMenuItem";
+			this->kMeansMethodToolStripMenuItem->ShortcutKeys = static_cast<System::Windows::Forms::Keys>(((System::Windows::Forms::Keys::Control | System::Windows::Forms::Keys::Shift) 
+				| System::Windows::Forms::Keys::K));
+			this->kMeansMethodToolStripMenuItem->Size = System::Drawing::Size(238, 22);
+			this->kMeansMethodToolStripMenuItem->Text = L"k-Means Method";
+			this->kMeansMethodToolStripMenuItem->Click += gcnew System::EventHandler(this, &REDACTOR::kMeansMethodToolStripMenuItem_Click);
 			// 
 			// REDACTOR
 			// 
@@ -251,6 +273,12 @@ private: System::Void ñîõðàíèòüToolStripMenuItem_Click(System::Object^  sender, 
                 }
                 fs->Close();
             };
+		 }
+private: System::Void kMeansMethodToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+			 ImageProcessing* kMeansMethod = new KMeansMethod(image);
+			 image = kMeansMethod->ProcessImage();
+			 PCTB_Central_image->Image = gcnew Bitmap(image);
+			 delete kMeansMethod;
 		 }
 };
 }
