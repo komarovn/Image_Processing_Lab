@@ -15,6 +15,7 @@ class ImageProcessing abstract
 {
 protected: 
 	gcroot <Bitmap^> sourceImage;
+	gcroot <Bitmap^> outputImage;
 	virtual Color CalculateNewPixelColor(int x, int y) = 0;
 public:
 	int Clamp(int value, int max, int min) 
@@ -43,4 +44,9 @@ public:
 		}
 		return resultImage;
 	}
+
+	Bitmap ^OutputImage() {
+		return outputImage;
+	}
+
 };

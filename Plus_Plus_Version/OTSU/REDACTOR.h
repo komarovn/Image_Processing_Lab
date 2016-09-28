@@ -278,8 +278,9 @@ private: System::Void ñîõðàíèòüToolStripMenuItem_Click(System::Object^  sender, 
 		 }
 private: System::Void kMeansMethodToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 			 ImageProcessing* kMeansMethod = new KMeansMethod(image, filename);
-			 image = kMeansMethod->ProcessImage();
-			 PCTB_Central_image->Image = gcnew Bitmap(image);
+			 //image = kMeansMethod->ProcessImage();
+			 //PCTB_Central_image->Image = gcnew Bitmap(image);
+			 PCTB_Central_image->Image = kMeansMethod->OutputImage();
 			 delete kMeansMethod;
 		 }
 };

@@ -24,8 +24,7 @@ private:
 	int k;
 	int* imageGrid;
 	int* centresOfClusters;
-	gcroot <Bitmap^> outputImage;
-	//cv::Mat outputImage;
+	cv::Mat dest;
 public:
 	Color CalculateNewPixelColor(int x, int y)
         {
@@ -47,10 +46,10 @@ public:
 	{
 		//BitmapData ^bmpData = sourceImage->LockBits(Rectangle(0, 0, sourceImage->Width, sourceImage->Height), Imaging::ImageLockMode::ReadWrite, sourceImage->PixelFormat);
 		//cv::Mat src = cv::Mat::Mat(sourceImage->Height, sourceImage->Width, CV_8UC3, (void*)bmpData->Scan0, CV_AUTO_STEP);
-		cv::Mat src = cv::imread(SystemToStl(filename));		// исходное изображение
-		cv::Mat dest;											// выходное изображение
+		cv::Mat src = cv::imread(SystemToStl(filename), CV_LOAD_IMAGE_COLOR);		// исходное изображение
+		//cv::Mat dest;											// выходное изображение
 		try {
-			cv::medianBlur(src, dest, 2);						// медианный фильтр для убирания шума, который влияет на метод k-средних
+			cv::medianBlur(src, dest, 3);						// медианный фильтр для убирания шума, который влияет на метод k-средних
 		}
 		catch (System::Runtime::InteropServices::SEHException ^ex) {
 			;
@@ -60,15 +59,44 @@ public:
 		int sizeOfImage = sourceImage->Height * sourceImage->Width;			// размер изображения
 		imageGrid = new int[sizeOfImage];						// сетка, представляющая собой изображение
 		centresOfClusters = new int[k];							// центры k кластеров
+		int *prevCentresOfClusters = new int[k];				// центры кластеров на предыдущем шаге
 		for(int i = 0; i < k; i++)								// бросаем k точек на сетку случайным образом
 		{
 			int randomCell = rand() % (sizeOfImage);			// номер случайной клетки сетки
 			centresOfClusters[i] = imageGrid[randomCell];		// центр кластера
+			prevCentresOfClusters[i] = centresOfClusters[i];
+		}
+		for(int i = 0; i < k; i++)
+		{
+			while(prevCentresOfClusters[i] != centresOfClusters[i]) // делаем алгоритм, пока центры кластеров не перестанут двигаться
+			{
+				;
+			}
 		}
 
 		//sourceImage->UnlockBits(bmpData);
-		outputImage = gcnew Bitmap(dest.cols, dest.rows, dest.step, sourceImage->PixelFormat, (IntPtr)dest.data); // выходное изображение
+		//outputImage = gcnew Bitmap(dest.cols, dest.rows, dest.step, sourceImage->PixelFormat, (IntPtr)dest.data); // выходное изображение
 		//outputImage = dest;
+		outputImage = CreateOutputImage();
+		delete [] prevCentresOfClusters;
+	}
+
+	Bitmap ^CreateOutputImage() {
+		Bitmap ^image = gcnew Bitmap(sourceImage->Width, sourceImage->Height);
+		int red;
+		int green;
+		int blue;
+		Color color;
+		for(int i = 0; i < sourceImage->Width; i++)
+			for(int j = 0; j < sourceImage->Height; j++)
+			{
+				red = dest.at<cv::Vec3b>(j, i)[2];
+				green = dest.at<cv::Vec3b>(j, i)[1];
+				blue = dest.at<cv::Vec3b>(j, i)[0];
+				color = Color::FromArgb(red, green, blue);
+				image->SetPixel(i, j, color);
+			}
+		return image;
 	}
 
 	~KMeansMethod() 
