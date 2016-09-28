@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vcclr.h>
+#include <string>
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -15,7 +16,6 @@ class ImageProcessing abstract
 protected: 
 	gcroot <Bitmap^> sourceImage;
 	virtual Color CalculateNewPixelColor(int x, int y) = 0;
-
 public:
 	int Clamp(int value, int max, int min) 
 	{

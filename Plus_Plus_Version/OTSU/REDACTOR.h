@@ -19,7 +19,8 @@ namespace OTSU{
 	public ref class REDACTOR : public System::Windows::Forms::Form
 	{
 	public:
-		Bitmap^ image;
+		Bitmap ^image;
+		String ^filename;
 
 	public:
 		REDACTOR(void)
@@ -211,6 +212,7 @@ namespace OTSU{
 				 if(dialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 				 {
 					 image = gcnew Bitmap(dialog->FileName);
+					 filename = dialog->FileName;
 					 SetWindowSize();
 					 PCTB_Central_image->Image = gcnew Bitmap(image);
 					 PCTB_Central_image->Refresh();
@@ -275,7 +277,7 @@ private: System::Void ñîõðàíèòüToolStripMenuItem_Click(System::Object^  sender, 
             };
 		 }
 private: System::Void kMeansMethodToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-			 ImageProcessing* kMeansMethod = new KMeansMethod(image);
+			 ImageProcessing* kMeansMethod = new KMeansMethod(image, filename);
 			 image = kMeansMethod->ProcessImage();
 			 PCTB_Central_image->Image = gcnew Bitmap(image);
 			 delete kMeansMethod;
