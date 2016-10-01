@@ -4,6 +4,8 @@
 #include "OtsuMethod.h"
 #include "KMeansMethod.h"
 
+#include "KMeansForm1.h"
+
 namespace OTSU{
 
 	using namespace System;
@@ -21,6 +23,7 @@ namespace OTSU{
 	public:
 		Bitmap ^image;
 		String ^filename;
+		static KMeansForm ^kMeansDialogBox = gcnew KMeansForm(); 
 
 	public:
 		REDACTOR(void)
@@ -277,7 +280,9 @@ private: System::Void ñîõðàíèòüToolStripMenuItem_Click(System::Object^  sender, 
             };
 		 }
 private: System::Void kMeansMethodToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-			 ImageProcessing* kMeansMethod = new KMeansMethod(image, filename);
+			 kMeansDialogBox->ShowDialog();
+			 int k = kMeansDialogBox->k;
+			 ImageProcessing* kMeansMethod = new KMeansMethod(image, filename, k);
 			 //image = kMeansMethod->ProcessImage();
 			 //PCTB_Central_image->Image = gcnew Bitmap(image);
 			 PCTB_Central_image->Image = kMeansMethod->OutputImage();

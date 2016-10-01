@@ -1,7 +1,10 @@
 #include "REDACTOR.h"
+#include "KMeansForm1.h"
 
 using namespace System;
 using namespace System::Windows::Forms;
+
+using namespace OTSU;
 
 [STAThread]
 

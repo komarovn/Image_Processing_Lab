@@ -10,6 +10,7 @@ using namespace System::Windows::Forms;
 using namespace System::Data;
 using namespace System::Drawing;
 
+using namespace std;
 
 class ImageProcessing abstract 
 {

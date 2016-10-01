@@ -2,13 +2,11 @@
 
 #include "ImageProcessing.h"
 #include "iostream"
-#include<opencv2/imgproc/imgproc.hpp>
-#include<opencv2/highgui/highgui.hpp>
-#include<opencv2/core/mat.hpp>
-#include <string>
 
 #include <opencv\cv.h>
-using namespace std;
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/mat.hpp>
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -42,10 +40,11 @@ public:
 		return string(ptr);
 	};
 
-	KMeansMethod(Bitmap ^image, String ^filename) : ImageProcessing(image)
+	KMeansMethod(Bitmap ^image, String ^filename, int k) : ImageProcessing(image) // k - число кластеров (задается пользователем в отдельном окне при вызове метода)
 	{
 		//BitmapData ^bmpData = sourceImage->LockBits(Rectangle(0, 0, sourceImage->Width, sourceImage->Height), Imaging::ImageLockMode::ReadWrite, sourceImage->PixelFormat);
 		//cv::Mat src = cv::Mat::Mat(sourceImage->Height, sourceImage->Width, CV_8UC3, (void*)bmpData->Scan0, CV_AUTO_STEP);
+		//sourceImage->UnlockBits(bmpData);
 		cv::Mat src = cv::imread(SystemToStl(filename), CV_LOAD_IMAGE_COLOR);		// исходное изображение
 		//cv::Mat dest;											// выходное изображение
 		try {
@@ -54,7 +53,6 @@ public:
 		catch (System::Runtime::InteropServices::SEHException ^ex) {
 			;
 		}
-		k = 2;													// число кластеров (задается пользователем в отдельном окне при вызове метода)
 		//int sizeOfImage = src.size;
 		int sizeOfImage = sourceImage->Height * sourceImage->Width;			// размер изображения
 		imageGrid = new int[sizeOfImage];						// сетка, представляющая собой изображение
@@ -74,7 +72,7 @@ public:
 			}
 		}
 
-		//sourceImage->UnlockBits(bmpData);
+		
 		//outputImage = gcnew Bitmap(dest.cols, dest.rows, dest.step, sourceImage->PixelFormat, (IntPtr)dest.data); // выходное изображение
 		//outputImage = dest;
 		outputImage = CreateOutputImage();
