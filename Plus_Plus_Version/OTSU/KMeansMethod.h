@@ -16,6 +16,33 @@ using namespace System::Data;
 using namespace System::Drawing;
 using namespace System::Drawing::Imaging;
 
+class PixelOfImage			// пиксель исходого изображения
+{
+private:
+	int red;
+	int green;
+	int blue;
+	int intensity;			// интенсивность
+	int *distances;			// массив из k элементов, i-й элемент - расстояние от пикселя до i-го кластера
+	int numberOfCluster;	// принадлежность кластеру с номером numberOfCluster
+public:
+	PixelOfImage() {};
+
+	PixelOfImage(cv::Vec3b color, int k)
+	{
+		red = color[2];
+		green = color[1];
+		blue = color[0];
+		distances = new int[k];
+	}
+
+	~PixelOfImage() { delete [] distances; }
+
+	int *GetDistances() { return distances; }
+
+	int GetNumberOfCluster() { return numberOfCluster; }
+};
+
 class KMeansMethod : public ImageProcessing
 {
 private:
@@ -23,8 +50,9 @@ private:
 	int* imageGrid;
 	int* centresOfClusters;
 	cv::Mat dest;
+	PixelOfImage *pixels;
 public:
-	Color CalculateNewPixelColor(int x, int y)
+	Color CalculateNewPixelColor(int x, int y) // метод не нужен!
         {
 			Color color = outputImage->GetPixel(x, y);
 			//Color color = outputImage.;
@@ -33,40 +61,49 @@ public:
             return color;
         }
 
-	string SystemToStl(String ^s) // Перевод типа String ^ в тип string
-	{
-		using namespace Runtime::InteropServices;
-		const char* ptr = (const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
-		return string(ptr);
-	};
-
 	KMeansMethod(Bitmap ^image, String ^filename, int k) : ImageProcessing(image) // k - число кластеров (задается пользователем в отдельном окне при вызове метода)
 	{
 		//BitmapData ^bmpData = sourceImage->LockBits(Rectangle(0, 0, sourceImage->Width, sourceImage->Height), Imaging::ImageLockMode::ReadWrite, sourceImage->PixelFormat);
 		//cv::Mat src = cv::Mat::Mat(sourceImage->Height, sourceImage->Width, CV_8UC3, (void*)bmpData->Scan0, CV_AUTO_STEP);
 		//sourceImage->UnlockBits(bmpData);
-		cv::Mat src = cv::imread(SystemToStl(filename), CV_LOAD_IMAGE_COLOR);		// исходное изображение
-		//cv::Mat dest;											// выходное изображение
-		try {
-			cv::medianBlur(src, dest, 3);						// медианный фильтр для убирания шума, который влияет на метод k-средних
-		}
-		catch (System::Runtime::InteropServices::SEHException ^ex) {
-			;
-		}
+		cv::Mat src = cv::imread(SystemToStl(filename), CV_LOAD_IMAGE_COLOR);	// исходное изображение
+		//cv::Mat dest;													// выходное изображение
+		cv::medianBlur(src, dest, 3);									// медианный фильтр для убирания шума, который влияет на метод k-средних
 		//int sizeOfImage = src.size;
-		int sizeOfImage = sourceImage->Height * sourceImage->Width;			// размер изображения
-		imageGrid = new int[sizeOfImage];						// сетка, представляющая собой изображение
-		centresOfClusters = new int[k];							// центры k кластеров
-		int *prevCentresOfClusters = new int[k];				// центры кластеров на предыдущем шаге
-		for(int i = 0; i < k; i++)								// бросаем k точек на сетку случайным образом
+		
+		
+		// Используется для оттенков серого, одномерного пространства векторов
+		cv::Mat intensityMat;
+		cv::cvtColor(dest, intensityMat, CV_BGR2GRAY);					// матрица интенсивностей
+
+
+		int sizeOfImage = dest.cols * dest.rows;						// размер изображения
+		//int **mask = new int*[k];										// массив, представляющий собой k слоев бинарных матриц; если элемент i-го слоя равен 0, то пиксель изображения не принадлежит кластеру i, если 1 - принадлежит; можно считать это неким базисом матриц k-мерного пространства
+		//for(int i = 0; i < k; i++)
+		//	mask[i] = new int[sizeOfImage];
+
+
+		pixels = new PixelOfImage[sizeOfImage]; 
+		// Используется для RGB, трехмерного пространства векторов
+		for(int i = 0; i < dest.cols; i++)
+			for(int j = 0; j < dest.rows; j++)
+			{
+				pixels[i * dest.rows + j] = PixelOfImage(dest.at<cv::Vec3b>(j, i), k);
+			}
+		
+		
+		imageGrid = new int[sizeOfImage];								// сетка, представляющая собой изображение
+		centresOfClusters = new int[k];									// центры k кластеров
+		int *prevCentresOfClusters = new int[k];						// центры кластеров на предыдущем шаге
+		for(int i = 0; i < k; i++)										// бросаем k точек на сетку случайным образом
 		{
-			int randomCell = rand() % (sizeOfImage);			// номер случайной клетки сетки
-			centresOfClusters[i] = imageGrid[randomCell];		// центр кластера
+			int randomCell = rand() % (sizeOfImage);					// номер случайной клетки сетки
+			centresOfClusters[i] = imageGrid[randomCell];				// центр кластера
 			prevCentresOfClusters[i] = centresOfClusters[i];
 		}
 		for(int i = 0; i < k; i++)
 		{
-			while(prevCentresOfClusters[i] != centresOfClusters[i]) // делаем алгоритм, пока центры кластеров не перестанут двигаться
+			while(prevCentresOfClusters[i] != centresOfClusters[i])		// делаем алгоритм, пока центры кластеров не перестанут двигаться
 			{
 				;
 			}

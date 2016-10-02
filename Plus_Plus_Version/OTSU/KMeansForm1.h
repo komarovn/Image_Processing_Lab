@@ -67,6 +67,7 @@ namespace OTSU {
 			this->inputKTextBox->Name = L"inputKTextBox";
 			this->inputKTextBox->Size = System::Drawing::Size(124, 20);
 			this->inputKTextBox->TabIndex = 0;
+			this->inputKTextBox->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &KMeansForm::inputKTextBox_KeyDown);
 			// 
 			// inputKButton
 			// 
@@ -116,14 +117,24 @@ namespace OTSU {
 		}
 #pragma endregion
 	private: System::Void inputKButton_Click(System::Object^  sender, System::EventArgs^  e) {
-				 k = Convert::ToInt32(inputKTextBox->Text);
+				 if(inputKTextBox->Text != "") 
+					 k = Convert::ToInt32(inputKTextBox->Text);
 				 Close();
 			 }
 	private: System::Void KMeansForm_Load(System::Object^  sender, System::EventArgs^  e) {
 				 k = 0;
+				 inputKTextBox->Text = "";
 			 }
 	private: System::Void cancelButton_Click(System::Object^  sender, System::EventArgs^  e) {
 				 Close();
 			 }
+private: System::Void inputKTextBox_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
+			 if(e->KeyCode == Keys::Enter) 
+			 {
+				 if(inputKTextBox->Text != "")
+					 k = Convert::ToInt32(inputKTextBox->Text);
+				 Close();
+			 }
+		 }
 };
 }
