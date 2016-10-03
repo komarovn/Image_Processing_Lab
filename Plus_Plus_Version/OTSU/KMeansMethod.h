@@ -333,6 +333,7 @@ public:
 		long int* ClasterRedPart   = new long int[k];
 		long int* ClasterBluePart  = new long int[k];
 		long int* ClasterGreenPart = new long int[k];
+		long int* pixelsInClasters = new long int[k];
 
 		int pixelCount = sourceImage->Width * sourceImage->Height;
 		for(int j = 0; j < k; j++)
@@ -340,6 +341,7 @@ public:
 			ClasterRedPart[j]   = 0;
 			ClasterGreenPart[j] = 0;
 			ClasterBluePart[j]  = 0;
+			pixelsInClasters[j] = 0;
 		}
 
 		for(int i = 0; i < pixelCount; i++)
@@ -349,13 +351,17 @@ public:
 			ClasterRedPart[NumberOfCluster]   += pixels[i].GetR();
 			ClasterGreenPart[NumberOfCluster] += pixels[i].GetG();
 			ClasterBluePart[NumberOfCluster]  += pixels[i].GetB();
+			pixelsInClasters[NumberOfCluster] ++;
 		}
 
 		for(int j = 0; j < k; j++)
 		{
-			ClasterRedPart[j]   = ClasterRedPart[j]   / pixelCount;
-			ClasterGreenPart[j] = ClasterGreenPart[j] / pixelCount;
-			ClasterBluePart[j]  = ClasterBluePart[j]  / pixelCount;
+			if(pixelsInClasters[j]!=0)
+			{
+				ClasterRedPart[j]   = ClasterRedPart[j]   / pixelsInClasters[j];
+				ClasterGreenPart[j] = ClasterGreenPart[j] / pixelsInClasters[j];
+				ClasterBluePart[j]  = ClasterBluePart[j]  / pixelsInClasters[j];
+			}
 		}
 
 		for(int i = 0; i < sourceImage->Width; i++)
@@ -368,6 +374,12 @@ public:
 										ClasterBluePart[NumberOfCluster]);
 				image->SetPixel(i, j, color);
 			}
+
+		delete[] ClasterRedPart;
+		delete[] ClasterBluePart;
+		delete[] ClasterGreenPart;
+		delete[] pixelsInClasters;
+
 		return image;
 	}
 
