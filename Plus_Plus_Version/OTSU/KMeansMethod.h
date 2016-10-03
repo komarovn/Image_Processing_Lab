@@ -23,7 +23,7 @@ private:
 	int green;
 	int blue;
 	int intensity;			// интенсивность
-	double *distances;			// массив из k элементов, i-й элемент - расстояние от пикселя до i-го кластера
+	double *distances;		// массив из k элементов, i-й элемент - расстояние от пикселя до i-го кластера
 	int numberOfCluster;	// принадлежность кластеру с номером numberOfCluster
 	int numClusters;        // количество кластеров;
 	int x, y;               // координаты пикселя
@@ -86,6 +86,20 @@ public:
 		return distances; 
 	}
 
+	double GetDistance(int positionInDistancesArray) 
+	{
+		if(positionInDistancesArray < 0 || positionInDistancesArray > numClusters)
+			return -1;
+		return distances[positionInDistancesArray];
+	}
+
+	void SetDistance(int positionInDistancesArray, double value)
+	{
+		if(positionInDistancesArray < 0 || positionInDistancesArray > numClusters)
+			return;
+		distances[positionInDistancesArray] = value;
+	}
+
 	int GetX() { return x; }
 
 	int GetY() { return y; }
@@ -142,45 +156,32 @@ public:
 class KMeansMethod : public ImageProcessing
 {
 private:
-	int k;
-	int* imageGrid;
-	PixelOfImage* centresOfClusters;
-	cv::Mat dest;
-	PixelOfImage *pixels;
+	int k;								// k - число кластеров (задается пользователем в отдельном окне при вызове метода)
+	PixelOfImage* centresOfClusters;	// центры k кластеров
+	cv::Mat dest;						// выходное изображение
+	PixelOfImage *pixels;				// пиксели изображения
 
 public:
 	Color CalculateNewPixelColor(int x, int y) // метод не нужен!
         {
 			Color color = outputImage->GetPixel(x, y);
-			//Color color = outputImage.;
-			//cv::Vec3b color = outputImage.at<cv::Vec3b>(cv::Point(x, y));
-			//Color col = color.channels;
             return color;
         }
 
-	KMeansMethod(Bitmap ^image, String ^filename, int k) : ImageProcessing(image) // k - число кластеров (задается пользователем в отдельном окне при вызове метода)
+	KMeansMethod(Bitmap ^image, String ^filename, int kInput) : ImageProcessing(image)
 	{
-		this->k = k;
+		k = kInput;
 		//BitmapData ^bmpData = sourceImage->LockBits(Rectangle(0, 0, sourceImage->Width, sourceImage->Height), Imaging::ImageLockMode::ReadWrite, sourceImage->PixelFormat);
 		//cv::Mat src = cv::Mat::Mat(sourceImage->Height, sourceImage->Width, CV_8UC3, (void*)bmpData->Scan0, CV_AUTO_STEP);
 		//sourceImage->UnlockBits(bmpData);
 		cv::Mat src = cv::imread(SystemToStl(filename), CV_LOAD_IMAGE_COLOR);	// исходное изображение
-		//cv::Mat dest;													// выходное изображение
 		cv::medianBlur(src, dest, 3);									// медианный фильтр для убирания шума, который влияет на метод k-средних
-		//int sizeOfImage = src.size;
-		
 		
 		// Используется для оттенков серого, одномерного пространства векторов
-		cv::Mat intensityMat;
-		cv::cvtColor(dest, intensityMat, CV_BGR2GRAY);					// матрица интенсивностей
-
-
+		//cv::Mat intensityMat;
+		//cv::cvtColor(dest, intensityMat, CV_BGR2GRAY);				// матрица интенсивностей
+		
 		int sizeOfImage = dest.cols * dest.rows;						// размер изображения
-		//int **mask = new int*[k];										// массив, представляющий собой k слоев бинарных матриц; если элемент i-го слоя равен 0, то пиксель изображения не принадлежит кластеру i, если 1 - принадлежит; можно считать это неким базисом матриц k-мерного пространства
-		//for(int i = 0; i < k; i++)
-		//	mask[i] = new int[sizeOfImage];
-
-
 		pixels = new PixelOfImage[sizeOfImage]; 
 		// Используется для RGB, трехмерного пространства векторов
 		for(int i = 0; i < dest.cols; i++)
@@ -189,14 +190,12 @@ public:
 				pixels[i * dest.rows + j] = PixelOfImage(dest.at<cv::Vec3b>(j, i), i, j, k);
 			}
 		
-		
-		//imageGrid = new int[sizeOfImage];								// сетка, представляющая собой изображение
-		centresOfClusters = new PixelOfImage[k];									// центры k кластеров
-		PixelOfImage* prevCentresOfClusters = new PixelOfImage[k];						// центры кластеров на предыдущем шаге
+		centresOfClusters = new PixelOfImage[k];
+		PixelOfImage* prevCentresOfClusters = new PixelOfImage[k];		// центры кластеров на предыдущем шаге
 
-		for(int i = 0; i < k; i++)										// бросаем k точек на сетку случайным образом
+		for(int i = 0; i < k; i++)										// бросаем k точек на изображение случайным образом
 		{
-			int randomCell = rand() % (sizeOfImage);					// номер случайной клетки сетки
+			int randomCell = rand() % sizeOfImage;						// номер случайного пикселя
 			centresOfClusters[i] = pixels[randomCell];				    // центр кластера
 			prevCentresOfClusters[i] = centresOfClusters[i];
 		}
@@ -206,8 +205,8 @@ public:
 		// делаем алгоритм, пока центры кластеров не перестанут двигаться
 		//--------------------------------------------------------------//
 
-
-		while(true)		
+		int ggg = 0;
+		while(ggg != 50)		
 		{
 			//--------------------------------------------------------------// 
 			// пересчет расстояний от пикселя до каждого центра кластера в RGB метрике
@@ -215,23 +214,23 @@ public:
 			for (int i = 0; i < k; i++)
 			{
 				for (int j = 0; j < sizeOfImage; j++)
-					( (pixels[j]).GetDistances() )[i] = sqrt(
+					pixels[j].SetDistance(i, sqrt(
 						(pixels[j].GetR() - prevCentresOfClusters[i].GetR()) * (pixels[j].GetR() - prevCentresOfClusters[i].GetR()) +
 						(pixels[j].GetG() - prevCentresOfClusters[i].GetG()) * (pixels[j].GetR() - prevCentresOfClusters[i].GetG()) +
-						(pixels[j].GetB() - prevCentresOfClusters[i].GetB()) * (pixels[j].GetB() - prevCentresOfClusters[i].GetB()) );
+						(pixels[j].GetB() - prevCentresOfClusters[i].GetB()) * (pixels[j].GetB() - prevCentresOfClusters[i].GetB()) ));
 			}	
 			//--------------------------------------------------------------// 
 			// распределение пикселей по кластерам
 			//--------------------------------------------------------------//
 			for (int i = 0; i < sizeOfImage; i++)
 			{
-				double minDist = 800; int minCluster = 0;     // минимальное расстояние до кластера и номер этого кластера
+				double minDist = sizeof(double); int minCluster = 0;     // минимальное расстояние до кластера и номер этого кластера
 
 				for (int j = 0; j < k; j++)
 				{
-					if ( minDist > (((pixels[i]).GetDistances())[j]) )
+					if ( minDist > pixels[i].GetDistance(j) )
 					{
-						minDist = pixels[i].GetDistances()[j];
+						minDist = pixels[i].GetDistance(j);
 						minCluster = j;
 					}
 				}
@@ -269,7 +268,7 @@ public:
 				double averageGreen = (double)(sumClusterGreen[i]) / (double)(numElemCluster[i]);	    // среднее Green канала в кластере i
 				double averageBlue  = (double)(sumClusterBlue[i] ) / (double)(numElemCluster[i]);		// среднее Blue канала в кластере  i
 
-				double minDist = 800;
+				double minDist = sizeof(double);
 
 				for (int j = 0; j < sizeOfImage; j++)
 				{
@@ -292,7 +291,7 @@ public:
 			//--------------------------------------------------------------// 
 			// выход из вечного цикла, если центры кластеров не меняются
 			//--------------------------------------------------------------//
-			bool flag = true;
+			/*bool flag = true;
 
 			for (int i = 0; i < k; i++)
 			{
@@ -312,19 +311,19 @@ public:
 				{
 					prevCentresOfClusters[i] = centresOfClusters[i];
 				}
-			}
+			}*/
+			ggg++;
 			//--------------------------------------------------------------//
 
 		}
 
-		
-		//outputImage = gcnew Bitmap(dest.cols, dest.rows, dest.step, sourceImage->PixelFormat, (IntPtr)dest.data); // выходное изображение
-		//outputImage = dest;
-		outputImage = CreateOutputImage();
+		outputImage = CreateOutputImage(); // выходное изображение
 		delete [] prevCentresOfClusters;
 	}
 
 	Bitmap^ CreateOutputImage() {
+		if(pixels == NULL)
+			return gcnew Bitmap(1, 1);
 		Bitmap ^image = gcnew Bitmap(sourceImage->Width, sourceImage->Height);
 		int red;
 		int green;
@@ -362,29 +361,18 @@ public:
 		for(int i = 0; i < sourceImage->Width; i++)
 			for(int j = 0; j < sourceImage->Height; j++)
 			{
-				int NumberOfCluster = pixels[j + i * sourceImage->Width].GetNumberOfCluster();
+				int NumberOfCluster = pixels[i + j * sourceImage->Width].GetNumberOfCluster();
 
 				color = Color::FromArgb(ClasterRedPart[NumberOfCluster],
 										ClasterGreenPart[NumberOfCluster],
 										ClasterBluePart[NumberOfCluster]);
 				image->SetPixel(i, j, color);
 			}
-
-		/*for(int i = 0; i < sourceImage->Width; i++)
-			for(int j = 0; j < sourceImage->Height; j++)
-			{
-				red = dest.at<cv::Vec3b>(j, i)[2];
-				green = dest.at<cv::Vec3b>(j, i)[1];
-				blue = dest.at<cv::Vec3b>(j, i)[0];
-				color = Color::FromArgb(red, green, blue);
-				image->SetPixel(i, j, color);
-			}*/
 		return image;
 	}
 
 	~KMeansMethod() 
 	{
-		delete [] imageGrid;
 		delete [] centresOfClusters;
 	}
 };
