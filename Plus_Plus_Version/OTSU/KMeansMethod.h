@@ -30,21 +30,61 @@ private:
 
 public:
 
-	PixelOfImage() {};
-
-	PixelOfImage(cv::Vec3b color, int k, int x0, int y0, int numCl)
+	PixelOfImage() 
 	{
-		red = color[2];
-		green = color[1];
-		blue = color[0];
-		distances = new double[k];
-		x = x0; y = y0;
-		numClusters = numCl;
+		red                   = 0;
+		green                 = 0;
+		blue                  = 0;
+		intensity             = 0;
+		numberOfCluster       = 0;
+		numClusters           = 0;
+		distances = new double[1];
+	};
+
+	PixelOfImage(const PixelOfImage &a)
+	{
+		red				= a.red;
+		green			= a.green;
+		blue			= a.blue;
+		intensity		= a.intensity;
+		numberOfCluster = a.numberOfCluster;
+		numClusters		= a.numClusters;
+		x				= a.x;
+		y				= a.y;
+
+		delete[] distances;
+		distances = new double[numClusters];
+
+		for(int i=0; i<numClusters; i++)
+		{
+			distances[i] = (a.distances)[i];
+		}
+
+
 	}
 
-	~PixelOfImage() { delete [] distances; }
+	PixelOfImage(cv::Vec3b color, int x0, int y0, int numCl)
+	{
+		intensity		= 0;
+		numberOfCluster = 0;
+		red				= color[2];
+		green			= color[1];
+		blue			= color[0];
+		distances		= new double[numCl];
+		x				= x0; 
+		y				= y0;
+		numClusters		= numCl;
+	}
 
-	double *GetDistances() { return distances; }
+	~PixelOfImage() 
+	{ 
+		delete [] distances; 
+	}
+
+	double *GetDistances() 
+	{ 
+		return distances; 
+	}
 
 	int GetX() { return x; }
 
@@ -70,7 +110,10 @@ public:
 
 	bool operator!=(PixelOfImage const & a)
 	{
-		return !(*this == a);
+		bool flag = false;
+		if((x != a.x)||(y != a.y)) flag = true;
+		
+		return flag;
 	}
 
 	PixelOfImage& operator=(PixelOfImage &elem) //перегрузка оператора присваивания
@@ -80,11 +123,18 @@ public:
 		blue = elem.blue;
 		intensity = elem.intensity;
 		numberOfCluster = elem.numberOfCluster;
-		x = elem.x; y = elem.y;
+		x = elem.x; 
+		y = elem.y;
 		numClusters = elem.numClusters;
+
+		delete[] distances;
 		distances = new double[numClusters];
+		
 		for (int i = 0; i < numClusters; i++)
-			distances[i] = elem.distances[i];
+		{
+			distances[i] = (elem.distances)[i];
+		}
+
 		return *this;
 	}
 };
@@ -135,13 +185,13 @@ public:
 		for(int i = 0; i < dest.cols; i++)
 			for(int j = 0; j < dest.rows; j++)
 			{
-				pixels[i * dest.rows + j] = PixelOfImage(dest.at<cv::Vec3b>(j, i), k, i, j, k);
+				pixels[i * dest.rows + j] = PixelOfImage(dest.at<cv::Vec3b>(j, i), i, j, k);
 			}
 		
 		
 		//imageGrid = new int[sizeOfImage];								// сетка, представляющая собой изображение
 		centresOfClusters = new PixelOfImage[k];									// центры k кластеров
-		PixelOfImage *prevCentresOfClusters = new PixelOfImage[k];						// центры кластеров на предыдущем шаге
+		PixelOfImage* prevCentresOfClusters = new PixelOfImage[k];						// центры кластеров на предыдущем шаге
 
 		for(int i = 0; i < k; i++)										// бросаем k точек на сетку случайным образом
 		{
@@ -164,7 +214,7 @@ public:
 			for (int i = 0; i < k; i++)
 			{
 				for (int j = 0; j < sizeOfImage; j++)
-					pixels[j].GetDistances()[i] = sqrt(
+					( (pixels[j]).GetDistances() )[i] = sqrt(
 						(pixels[j].GetR() - prevCentresOfClusters[i].GetR()) * (pixels[j].GetR() - prevCentresOfClusters[i].GetR()) +
 						(pixels[j].GetG() - prevCentresOfClusters[i].GetG()) * (pixels[j].GetR() - prevCentresOfClusters[i].GetG()) +
 						(pixels[j].GetB() - prevCentresOfClusters[i].GetB()) * (pixels[j].GetB() - prevCentresOfClusters[i].GetB()) );
@@ -178,7 +228,7 @@ public:
 
 				for (int j = 0; j < k; j++)
 				{
-					if (minDist > pixels[i].GetDistances()[j])
+					if ( minDist > (((pixels[i]).GetDistances())[j]) )
 					{
 						minDist = pixels[i].GetDistances()[j];
 						minCluster = j;
@@ -187,33 +237,36 @@ public:
 
 				pixels[i].SetNumberOfCluster(minCluster);
 			}
+
 			//--------------------------------------------------------------// 
 			// пересчет центров кластеров в RGB метрике
 			//--------------------------------------------------------------//	
-			int *sumClusterRed = new int[k];        // сумма Red канала в каждом кластере
-			int *sumClusterGreen = new int[k];		// сумма Green канала в каждом кластере
-			int *sumClusterBlue = new int[k];		// сумма Blue канала в каждом кластере
-			int *numElemCluster = new int[k];		// количество элементов в каждом кластере
+			long int* sumClusterRed   = new long int[k];        // сумма Red канала в каждом кластере
+			long int* sumClusterGreen = new long int[k];		// сумма Green канала в каждом кластере
+			long int* sumClusterBlue  = new long int[k];		// сумма Blue канала в каждом кластере
+			long int* numElemCluster  = new long int[k];		// количество элементов в каждом кластере
 
 			for (int i = 0; i < k; i++)
 			{
-				sumClusterRed[i] = 0; sumClusterGreen[i] = 0;
-				sumClusterBlue[i] = 0; numElemCluster[i] = 0;
+				sumClusterRed[i]   = 0; 
+				sumClusterGreen[i] = 0;
+				sumClusterBlue[i]  = 0; 
+				numElemCluster[i]  = 0;
 
 				for (int j = 0; j < sizeOfImage; j++)
 				{
 					if (pixels[j].GetNumberOfCluster() == i)
 					{
-						sumClusterRed[i] += pixels[j].GetR();
+						sumClusterRed[i]   += pixels[j].GetR();
 						sumClusterGreen[i] += pixels[j].GetG();
-						sumClusterBlue[i] += pixels[j].GetB();
+						sumClusterBlue[i]  += pixels[j].GetB();
 						numElemCluster[i]++;
 					}
 				}
 
-				double averageRed = sumClusterRed[i] / numElemCluster[i];		// среднее Red канала в кластере i
-				double averageGreen = sumClusterGreen[i] / numElemCluster[i];	// среднее Green канала в кластере i
-				double averageBlue = sumClusterBlue[i] / numElemCluster[i];		// среднее Blue канала в кластере i
+				double averageRed   = (double)(sumClusterRed[i]  ) / (double)(numElemCluster[i]);		// среднее Red канала в кластере i
+				double averageGreen = (double)(sumClusterGreen[i]) / (double)(numElemCluster[i]);	    // среднее Green канала в кластере i
+				double averageBlue  = (double)(sumClusterBlue[i] ) / (double)(numElemCluster[i]);		// среднее Blue канала в кластере i
 
 				double minDist = 800;
 
@@ -222,9 +275,9 @@ public:
 					if (pixels[j].GetNumberOfCluster() == i)
 					{
 						double dist = sqrt(
-							(pixels[j].GetR() - averageRed) * (pixels[j].GetR() - averageRed) +
+							(pixels[j].GetR() - averageRed  ) * (pixels[j].GetR() - averageRed  ) +
 							(pixels[j].GetG() - averageGreen) * (pixels[j].GetR() - averageGreen) +
-							(pixels[j].GetB() - averageBlue) * (pixels[j].GetB() - averageBlue));
+							(pixels[j].GetB() - averageBlue ) * (pixels[j].GetB() - averageBlue ) );
 
 						if (minDist > dist)
 						{
@@ -239,11 +292,19 @@ public:
 			// выход из вечного цикла, если центры кластеров не меняются
 			//--------------------------------------------------------------//
 			bool flag = true;
+
 			for (int i = 0; i < k; i++)
 			{
-				if (centresOfClusters[i] != prevCentresOfClusters[i]) flag = false;
+				if (centresOfClusters[i] != prevCentresOfClusters[i]) 
+				{
+					flag = false;
+					break;
+				}
 			}
-			if (flag) break;
+
+			if (flag) 
+				break;
+
 			else
 			{
 				for (int i = 0; i < k; i++)
