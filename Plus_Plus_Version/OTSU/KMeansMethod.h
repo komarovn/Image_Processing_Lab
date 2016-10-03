@@ -187,7 +187,7 @@ public:
 		for(int i = 0; i < dest.cols; i++)
 			for(int j = 0; j < dest.rows; j++)
 			{
-				pixels[i * dest.rows + j] = PixelOfImage(dest.at<cv::Vec3b>(j, i), i, j, k);
+				pixels[j * dest.cols + i] = PixelOfImage(dest.at<cv::Vec3b>(j, i), i, j, k);
 			}
 		
 		centresOfClusters = new PixelOfImage[k];
@@ -224,7 +224,7 @@ public:
 			//--------------------------------------------------------------//
 			for (int i = 0; i < sizeOfImage; i++)
 			{
-				double minDist = sizeof(double); int minCluster = 0;     // минимальное расстояние до кластера и номер этого кластера
+				double minDist = INT_MAX; int minCluster = 0;     // минимальное расстояние до кластера и номер этого кластера
 
 				for (int j = 0; j < k; j++)
 				{
@@ -268,7 +268,7 @@ public:
 				double averageGreen = (double)(sumClusterGreen[i]) / (double)(numElemCluster[i]);	    // среднее Green канала в кластере i
 				double averageBlue  = (double)(sumClusterBlue[i] ) / (double)(numElemCluster[i]);		// среднее Blue канала в кластере  i
 
-				double minDist = sizeof(double);
+				double minDist = INT_MAX;
 
 				for (int j = 0; j < sizeOfImage; j++)
 				{
