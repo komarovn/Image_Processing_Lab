@@ -160,6 +160,7 @@ public:
 
 	KMeansMethod(Bitmap ^image, String ^filename, int k) : ImageProcessing(image) // k - число кластеров (задается пользователем в отдельном окне при вызове метода)
 	{
+		this->k = k;
 		//BitmapData ^bmpData = sourceImage->LockBits(Rectangle(0, 0, sourceImage->Width, sourceImage->Height), Imaging::ImageLockMode::ReadWrite, sourceImage->PixelFormat);
 		//cv::Mat src = cv::Mat::Mat(sourceImage->Height, sourceImage->Width, CV_8UC3, (void*)bmpData->Scan0, CV_AUTO_STEP);
 		//sourceImage->UnlockBits(bmpData);
@@ -264,9 +265,9 @@ public:
 					}
 				}
 
-				double averageRed   = (double)(sumClusterRed[i]  ) / (double)(numElemCluster[i]);		// среднее Red канала в кластере i
+				double averageRed   = (double)(sumClusterRed[i]  ) / (double)(numElemCluster[i]);		// среднее Red канала в кластере   i
 				double averageGreen = (double)(sumClusterGreen[i]) / (double)(numElemCluster[i]);	    // среднее Green канала в кластере i
-				double averageBlue  = (double)(sumClusterBlue[i] ) / (double)(numElemCluster[i]);		// среднее Blue канала в кластере i
+				double averageBlue  = (double)(sumClusterBlue[i] ) / (double)(numElemCluster[i]);		// среднее Blue канала в кластере  i
 
 				double minDist = 800;
 
@@ -329,7 +330,47 @@ public:
 		int green;
 		int blue;
 		Color color;
+
+		long int* ClasterRedPart   = new long int[k];
+		long int* ClasterBluePart  = new long int[k];
+		long int* ClasterGreenPart = new long int[k];
+
+		int pixelCount = sourceImage->Width * sourceImage->Height;
+		for(int j = 0; j < k; j++)
+		{
+			ClasterRedPart[j]   = 0;
+			ClasterGreenPart[j] = 0;
+			ClasterBluePart[j]  = 0;
+		}
+
+		for(int i = 0; i < pixelCount; i++)
+		{
+			int NumberOfCluster = pixels[i].GetNumberOfCluster();
+			
+			ClasterRedPart[NumberOfCluster]   += pixels[i].GetR();
+			ClasterGreenPart[NumberOfCluster] += pixels[i].GetG();
+			ClasterBluePart[NumberOfCluster]  += pixels[i].GetB();
+		}
+
+		for(int j = 0; j < k; j++)
+		{
+			ClasterRedPart[j]   = ClasterRedPart[j]   / pixelCount;
+			ClasterGreenPart[j] = ClasterGreenPart[j] / pixelCount;
+			ClasterBluePart[j]  = ClasterBluePart[j]  / pixelCount;
+		}
+
 		for(int i = 0; i < sourceImage->Width; i++)
+			for(int j = 0; j < sourceImage->Height; j++)
+			{
+				int NumberOfCluster = pixels[j + i * sourceImage->Width].GetNumberOfCluster();
+
+				color = Color::FromArgb(ClasterRedPart[NumberOfCluster],
+										ClasterGreenPart[NumberOfCluster],
+										ClasterBluePart[NumberOfCluster]);
+				image->SetPixel(i, j, color);
+			}
+
+		/*for(int i = 0; i < sourceImage->Width; i++)
 			for(int j = 0; j < sourceImage->Height; j++)
 			{
 				red = dest.at<cv::Vec3b>(j, i)[2];
@@ -337,7 +378,7 @@ public:
 				blue = dest.at<cv::Vec3b>(j, i)[0];
 				color = Color::FromArgb(red, green, blue);
 				image->SetPixel(i, j, color);
-			}
+			}*/
 		return image;
 	}
 
