@@ -187,12 +187,14 @@ public:
 		sourceImage = image;
 		k = kInput;
 		cv::Mat src = cv::imread(SystemToStl(filename), CV_LOAD_IMAGE_COLOR);	// исходное изображение
-		cv::medianBlur(src, dest, 3);									// медианный фильтр для убирания шума, который влияет на метод k-средних
+		cv::medianBlur(src, dest, 3);											// медианный фильтр для убирания шума, который влияет на метод k-средних
 		
-		int sizeOfImage = dest.cols * dest.rows;						// размер изображения
+		int sizeOfImage = dest.cols * dest.rows;								// размер изображения
 		pixels = new PixelOfImage[sizeOfImage]; 
 
+		//--------------------------------------------------------------//
 		// Используется для RGB, трехмерного пространства векторов
+		//--------------------------------------------------------------//
 		for(int i = 0; i < dest.cols; i++)
 			for(int j = 0; j < dest.rows; j++)
 			{
@@ -204,17 +206,21 @@ public:
 		//--------------------------------------------------------------//
 		// выделяем память под некоторые данные
 		//--------------------------------------------------------------//	
-		double* averageRed   = new double[k];
-		double* averageGreen = new double[k];		
-		double* averageBlue  = new double[k];
-		double* minDist		 = new double[k];
-		double* Dist         = new double[k];
-		PixelOfImage* prevCentresOfClusters = new PixelOfImage[k];		// центры кластеров на предыдущем шаге
+		double* averageRed		  =   new double[k];
+		double* averageGreen	  =   new double[k];		
+		double* averageBlue		  =   new double[k];
+		double* minDist			  =   new double[k];
+		double* Dist			  =   new double[k];
+		long int* sumClusterRed   = new long int[k];					 // сумма Red канала в каждом кластере
+		long int* sumClusterGreen = new long int[k];					 // сумма Green канала в каждом кластере
+		long int* sumClusterBlue  = new long int[k];					 // сумма Blue канала в каждом кластере
+		long int* numElemCluster  = new long int[k];					 // количество элементов в каждом кластере
+		PixelOfImage* prevCentresOfClusters = new PixelOfImage[k];		 // центры кластеров на предыдущем шаге
 
-		for(int i = 0; i < k; i++)										// бросаем k точек на изображение случайным образом
+		for(int i = 0; i < k; i++)										 // бросаем k точек на изображение случайным образом
 		{
-			int randomCell = rand() % sizeOfImage;						// номер случайного пикселя
-			centresOfClusters[i] = pixels[randomCell];				    // центр кластера
+			int randomCell = rand() % sizeOfImage;						 // номер случайного пикселя
+			centresOfClusters[i] = pixels[randomCell];				     // центр кластера
 			prevCentresOfClusters[i] = centresOfClusters[i];
 		}
 
@@ -257,11 +263,6 @@ public:
 			//--------------------------------------------------------------// 
 			// пересчет центров кластеров в RGB метрике
 			//--------------------------------------------------------------//	
-			long int* sumClusterRed   = new long int[k];        // сумма Red канала в каждом кластере
-			long int* sumClusterGreen = new long int[k];		// сумма Green канала в каждом кластере
-			long int* sumClusterBlue  = new long int[k];		// сумма Blue канала в каждом кластере
-			long int* numElemCluster  = new long int[k];		// количество элементов в каждом кластере
-
 			for (int i = 0; i < k; i++)
 			{
 				sumClusterRed[i]   = 0; 
@@ -281,7 +282,6 @@ public:
 
 			for (int i = 0; i < k; i++)
 			{
-				
 				averageRed[i]   = (double)(sumClusterRed[i]  ) / (double)(numElemCluster[i]);		// среднее Red канала в кластере   i
 				averageGreen[i] = (double)(sumClusterGreen[i]) / (double)(numElemCluster[i]);	    // среднее Green канала в кластере i
 				averageBlue[i]  = (double)(sumClusterBlue[i] ) / (double)(numElemCluster[i]);		// среднее Blue канала в кластере  i
@@ -329,12 +329,16 @@ public:
 		//--------------------------------------------------------------// 
 		// завершаем работу алгоритма
 		//--------------------------------------------------------------//	
-		delete[] averageRed;   
-		delete[] averageGreen; 	
-		delete[] averageBlue; 
-		delete[] minDist;		 
-		delete[] Dist;    
-		delete[] prevCentresOfClusters;
+		delete[] averageRed				;   
+		delete[] averageGreen			; 	
+		delete[] averageBlue			; 
+		delete[] minDist				;		 
+		delete[] Dist					;    
+		delete[] prevCentresOfClusters	;
+		delete[] sumClusterRed			;  				
+		delete[] sumClusterGreen		; 					
+		delete[] sumClusterBlue			; 					
+		delete[] numElemCluster			;  
 
 		outputImage = CreateOutputImage(); // выходное изображение
 		
