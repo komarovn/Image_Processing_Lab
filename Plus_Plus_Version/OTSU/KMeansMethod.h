@@ -189,13 +189,16 @@ public:
 		long int* sumClusterBlue  = new long int[k];					 // сумма Blue канала в каждом кластере
 		long int* numElemCluster  = new long int[k];					 // количество элементов в каждом кластере
 		PixelOfImage* prevCentresOfClusters = new PixelOfImage[k];		 // центры кластеров на предыдущем шаге
+		PixelOfImage* TMP;
 
 		for(int i = 0; i < k; i++)										 // бросаем k точек на изображение случайным образом
 		{
-			int randomCell = rand() % sizeOfImage;						 // номер случайного пикселя
-			centresOfClusters[i] = pixels[randomCell];				     // центр кластера
-			prevCentresOfClusters[i] = centresOfClusters[i];
+			centresOfClusters[i] = pixels[rand() % sizeOfImage];		 // центр кластера
 		}
+		
+		TMP = prevCentresOfClusters; 
+		prevCentresOfClusters = centresOfClusters;
+		centresOfClusters = TMP;
 
 		//--------------------------------------------------------------//
 		// делаем алгоритм, пока центры кластеров не перестанут двигаться
@@ -293,8 +296,9 @@ public:
 
 			if(flag) break;
 		
-			for (int i = 0; i < k; i++)
-				prevCentresOfClusters[i] = centresOfClusters[i];
+			TMP = prevCentresOfClusters;
+			prevCentresOfClusters = centresOfClusters;
+			centresOfClusters = TMP;
 		}
 
 		//--------------------------------------------------------------// 
