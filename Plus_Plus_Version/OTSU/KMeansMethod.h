@@ -1,8 +1,9 @@
 #pragma once
 
-#include "ImageProcessing.h"
+//#include "ImageProcessing.h"
 #include "iostream"
-
+#include <vcclr.h>
+#include <string>
 #include <opencv/cv.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -15,6 +16,7 @@ using namespace System::Windows::Forms;
 using namespace System::Data;
 using namespace System::Drawing;
 using namespace System::Drawing::Imaging;
+using namespace std;
 
 class PixelOfImage			// пиксель исходого изображения
 {
@@ -116,18 +118,26 @@ public:
 
 	bool operator==(PixelOfImage const & a)
 	{
-		bool flag = false;
-		if ((x == a.x) && (y == a.y)) flag = true;
-
-		return flag;
+		if((red == a.red)&&(blue == a.blue)&&(green == a.green))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	bool operator!=(PixelOfImage const & a)
 	{
-		bool flag = false;
-		if((x != a.x)||(y != a.y)) flag = true;
-		
-		return flag;
+		if((red == a.red)&&(blue == a.blue)&&(green == a.green))
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	PixelOfImage& operator=(PixelOfImage &elem) //перегрузка оператора присваивания
@@ -153,36 +163,35 @@ public:
 	}
 };
 
-class KMeansMethod : public ImageProcessing
+class KMeansMethod
 {
 private:
 	int k;								// k - число кластеров (задается пользователем в отдельном окне при вызове метода)
 	PixelOfImage* centresOfClusters;	// центры k кластеров
 	cv::Mat dest;						// выходное изображение
 	PixelOfImage *pixels;				// пиксели изображения
+	gcroot <Bitmap^> sourceImage;
+	gcroot <Bitmap^> outputImage;
 
 public:
-	Color CalculateNewPixelColor(int x, int y) // метод не нужен!
-        {
-			Color color = outputImage->GetPixel(x, y);
-            return color;
-        }
 
-	KMeansMethod(Bitmap ^image, String ^filename, int kInput) : ImageProcessing(image)
+	string SystemToStl(String ^s) // Перевод типа String ^ в тип string
 	{
+		using namespace Runtime::InteropServices;
+		const char* ptr = (const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
+		return string(ptr);
+	};
+
+	KMeansMethod(Bitmap ^image, String ^filename, int kInput) 
+	{
+		sourceImage = image;
 		k = kInput;
-		//BitmapData ^bmpData = sourceImage->LockBits(Rectangle(0, 0, sourceImage->Width, sourceImage->Height), Imaging::ImageLockMode::ReadWrite, sourceImage->PixelFormat);
-		//cv::Mat src = cv::Mat::Mat(sourceImage->Height, sourceImage->Width, CV_8UC3, (void*)bmpData->Scan0, CV_AUTO_STEP);
-		//sourceImage->UnlockBits(bmpData);
 		cv::Mat src = cv::imread(SystemToStl(filename), CV_LOAD_IMAGE_COLOR);	// исходное изображение
 		cv::medianBlur(src, dest, 3);									// медианный фильтр для убирания шума, который влияет на метод k-средних
 		
-		// Используется для оттенков серого, одномерного пространства векторов
-		//cv::Mat intensityMat;
-		//cv::cvtColor(dest, intensityMat, CV_BGR2GRAY);				// матрица интенсивностей
-		
 		int sizeOfImage = dest.cols * dest.rows;						// размер изображения
 		pixels = new PixelOfImage[sizeOfImage]; 
+
 		// Используется для RGB, трехмерного пространства векторов
 		for(int i = 0; i < dest.cols; i++)
 			for(int j = 0; j < dest.rows; j++)
@@ -191,6 +200,15 @@ public:
 			}
 		
 		centresOfClusters = new PixelOfImage[k];
+		
+		//--------------------------------------------------------------//
+		// выделяем память под некоторые данные
+		//--------------------------------------------------------------//	
+		double* averageRed   = new double[k];
+		double* averageGreen = new double[k];		
+		double* averageBlue  = new double[k];
+		double* minDist		 = new double[k];
+		double* Dist         = new double[k];
 		PixelOfImage* prevCentresOfClusters = new PixelOfImage[k];		// центры кластеров на предыдущем шаге
 
 		for(int i = 0; i < k; i++)										// бросаем k точек на изображение случайным образом
@@ -200,13 +218,10 @@ public:
 			prevCentresOfClusters[i] = centresOfClusters[i];
 		}
 
-
 		//--------------------------------------------------------------//
 		// делаем алгоритм, пока центры кластеров не перестанут двигаться
 		//--------------------------------------------------------------//
-
-		int ggg = 0;
-		while(ggg != 50)		
+		while(true)		
 		{
 			//--------------------------------------------------------------// 
 			// пересчет расстояний от пикселя до каждого центра кластера в RGB метрике
@@ -216,9 +231,10 @@ public:
 				for (int j = 0; j < sizeOfImage; j++)
 					pixels[j].SetDistance(i, sqrt(
 						(pixels[j].GetR() - prevCentresOfClusters[i].GetR()) * (pixels[j].GetR() - prevCentresOfClusters[i].GetR()) +
-						(pixels[j].GetG() - prevCentresOfClusters[i].GetG()) * (pixels[j].GetR() - prevCentresOfClusters[i].GetG()) +
+						(pixels[j].GetG() - prevCentresOfClusters[i].GetG()) * (pixels[j].GetG() - prevCentresOfClusters[i].GetG()) +
 						(pixels[j].GetB() - prevCentresOfClusters[i].GetB()) * (pixels[j].GetB() - prevCentresOfClusters[i].GetB()) ));
 			}	
+
 			//--------------------------------------------------------------// 
 			// распределение пикселей по кластерам
 			//--------------------------------------------------------------//
@@ -252,46 +268,46 @@ public:
 				sumClusterGreen[i] = 0;
 				sumClusterBlue[i]  = 0; 
 				numElemCluster[i]  = 0;
-
-				for (int j = 0; j < sizeOfImage; j++)
-				{
-					if (pixels[j].GetNumberOfCluster() == i)
-					{
-						sumClusterRed[i]   += pixels[j].GetR();
-						sumClusterGreen[i] += pixels[j].GetG();
-						sumClusterBlue[i]  += pixels[j].GetB();
-						numElemCluster[i]++;
-					}
-				}
-
-				double averageRed   = (double)(sumClusterRed[i]  ) / (double)(numElemCluster[i]);		// среднее Red канала в кластере   i
-				double averageGreen = (double)(sumClusterGreen[i]) / (double)(numElemCluster[i]);	    // среднее Green канала в кластере i
-				double averageBlue  = (double)(sumClusterBlue[i] ) / (double)(numElemCluster[i]);		// среднее Blue канала в кластере  i
-
-				double minDist = INT_MAX;
-
-				for (int j = 0; j < sizeOfImage; j++)
-				{
-					if (pixels[j].GetNumberOfCluster() == i)
-					{
-						double dist = sqrt(
-							(pixels[j].GetR() - averageRed  ) * (pixels[j].GetR() - averageRed  ) +
-							(pixels[j].GetG() - averageGreen) * (pixels[j].GetR() - averageGreen) +
-							(pixels[j].GetB() - averageBlue ) * (pixels[j].GetB() - averageBlue ) );
-
-						if (minDist > dist)
-						{
-							minDist = dist;
-							centresOfClusters[i] = pixels[j];
-						}
-					}
-				}
-				
 			}
+
+			for (int j = 0; j < sizeOfImage; j++)
+			{
+				int NumberOfCluster = pixels[j].GetNumberOfCluster();
+				sumClusterRed[NumberOfCluster]   += pixels[j].GetR();
+				sumClusterGreen[NumberOfCluster] += pixels[j].GetG();
+				sumClusterBlue[NumberOfCluster]  += pixels[j].GetB();
+				numElemCluster[NumberOfCluster]++;
+			}
+
+			for (int i = 0; i < k; i++)
+			{
+				
+				averageRed[i]   = (double)(sumClusterRed[i]  ) / (double)(numElemCluster[i]);		// среднее Red канала в кластере   i
+				averageGreen[i] = (double)(sumClusterGreen[i]) / (double)(numElemCluster[i]);	    // среднее Green канала в кластере i
+				averageBlue[i]  = (double)(sumClusterBlue[i] ) / (double)(numElemCluster[i]);		// среднее Blue канала в кластере  i
+				minDist[i]      = INT_MAX;
+			}
+
+			for (int j = 0; j < sizeOfImage; j++)
+			{
+				int NumberOfCluster = pixels[j].GetNumberOfCluster();
+				Dist[NumberOfCluster] = sqrt(
+					(pixels[j].GetR() - averageRed[NumberOfCluster]  ) * (pixels[j].GetR() - averageRed[NumberOfCluster]  ) +
+					(pixels[j].GetG() - averageGreen[NumberOfCluster]) * (pixels[j].GetG() - averageGreen[NumberOfCluster]) +
+					(pixels[j].GetB() - averageBlue[NumberOfCluster] ) * (pixels[j].GetB() - averageBlue[NumberOfCluster] ) );
+
+				if (minDist[NumberOfCluster] > Dist[NumberOfCluster])
+				{
+					minDist[NumberOfCluster] = Dist[NumberOfCluster];
+					centresOfClusters[NumberOfCluster] = pixels[j];
+				}
+			}	
+
+    
 			//--------------------------------------------------------------// 
 			// выход из вечного цикла, если центры кластеров не меняются
-			//--------------------------------------------------------------//
-			/*bool flag = true;
+			//--------------------------------------------------------------//			
+			bool flag = true;
 
 			for (int i = 0; i < k; i++)
 			{
@@ -302,32 +318,33 @@ public:
 				}
 			}
 
-			if (flag) 
-				break;
-
-			else
+			if(flag) break;
+		
+			for (int i = 0; i < k; i++)
 			{
-				for (int i = 0; i < k; i++)
-				{
-					prevCentresOfClusters[i] = centresOfClusters[i];
-				}
-			}*/
-			ggg++;
-			//--------------------------------------------------------------//
-
+				prevCentresOfClusters[i] = centresOfClusters[i];
+			}
 		}
 
+		//--------------------------------------------------------------// 
+		// завершаем работу алгоритма
+		//--------------------------------------------------------------//	
+		delete[] averageRed;   
+		delete[] averageGreen; 	
+		delete[] averageBlue; 
+		delete[] minDist;		 
+		delete[] Dist;    
+		delete[] prevCentresOfClusters;
+
 		outputImage = CreateOutputImage(); // выходное изображение
-		delete [] prevCentresOfClusters;
+		
 	}
 
-	Bitmap^ CreateOutputImage() {
-		if(pixels == NULL)
-			return gcnew Bitmap(1, 1);
+	Bitmap^ CreateOutputImage() 
+	{
+		if(pixels == NULL) return gcnew Bitmap(1, 1);
+
 		Bitmap ^image = gcnew Bitmap(sourceImage->Width, sourceImage->Height);
-		int red;
-		int green;
-		int blue;
 		Color color;
 
 		long int* ClasterRedPart   = new long int[k];
@@ -372,6 +389,7 @@ public:
 				color = Color::FromArgb(ClasterRedPart[NumberOfCluster],
 										ClasterGreenPart[NumberOfCluster],
 										ClasterBluePart[NumberOfCluster]);
+
 				image->SetPixel(i, j, color);
 			}
 
@@ -381,6 +399,11 @@ public:
 		delete[] pixelsInClasters;
 
 		return image;
+	}
+
+	Bitmap ^OutputImage() 
+	{
+		return outputImage;
 	}
 
 	~KMeansMethod() 
