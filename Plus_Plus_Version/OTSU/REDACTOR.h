@@ -282,9 +282,7 @@ private: System::Void ñîõðàíèòüToolStripMenuItem_Click(System::Object^  sender, 
 private: System::Void kMeansMethodToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 			 kMeansDialogBox->ShowDialog();
 			 int k = kMeansDialogBox->k;
-			 ImageProcessing* kMeansMethod = new KMeansMethod(image, filename, k);
-			 //image = kMeansMethod->ProcessImage();
-			 //PCTB_Central_image->Image = gcnew Bitmap(image);
+			 KMeansMethod* kMeansMethod = new KMeansMethod(filename, k);
 			 PCTB_Central_image->Image = kMeansMethod->OutputImage();
 			 delete kMeansMethod;
 		 }

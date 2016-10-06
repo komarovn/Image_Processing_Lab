@@ -204,6 +204,7 @@
     <ClInclude Include="REDACTOR.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="specialFacilities.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="KMeansForm1.resx">
