@@ -155,7 +155,10 @@ private:
 public:
 	KMeansMethod(String ^filename, int kInput)
 	{
-		k = kInput;
+		if(kInput == -2)
+			k = 1;		// здесь считается оптимальное значение k
+		else
+			k = kInput;
 		cv::Mat src = cv::imread(SystemToStl(filename), CV_LOAD_IMAGE_COLOR);	// исходное изображение
 		cv::medianBlur(src, dest, 3);											// медианный фильтр для убирания шума, который влияет на метод k-средних
 		
