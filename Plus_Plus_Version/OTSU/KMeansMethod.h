@@ -1,6 +1,8 @@
 #pragma once
 
 #include "iostream"
+#include <time.h>
+#include <limits.h>
 #include <vcclr.h>
 #include <string>
 #include <opencv/cv.h>
@@ -8,6 +10,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/mat.hpp>
 #include "specialFacilities.h"
+#include <stdlib.h>
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -155,12 +158,67 @@ private:
 public:
 	KMeansMethod(String ^filename, int kInput)
 	{
-		if(kInput == -2)
-			k = 1;		// здесь считается оптимальное значение k
-		else
-			k = kInput;
+		
 		cv::Mat src = cv::imread(SystemToStl(filename), CV_LOAD_IMAGE_COLOR);	// исходное изображение
 		cv::medianBlur(src, dest, 3);											// медианный фильтр для убирания шума, который влияет на метод k-средних
+
+		gcroot <Bitmap^> tmp_img = gcnew Bitmap(filename);
+		int *histogram = new int[256];
+
+		for (int i = 0; i < 256; i++) { histogram[i] = 0; }			
+
+		if (kInput == -2)
+		{
+			/*for (int i = 0; i < tmp_img->Width; i++)
+				for (int j = 0; j < tmp_img->Height; j++)
+				{
+					int intensity = (int)(
+						0.2126 * tmp_img->GetPixel(i, j).R +
+						0.7152 * tmp_img->GetPixel(i, j).G +
+						0.0722 * tmp_img->GetPixel(i, j).B);
+					histogram[intensity]++;
+				}
+
+			int sum = 0;
+			for (int i = 0; i < 256; i++)
+			{
+				sum += histogram[i];
+			}
+
+			k = 1;
+			bool max = false, min = false;
+			int h_max, h_min;
+			for (int i = 1; i < 255; i++)
+			{
+				if ((histogram[i - 1] < histogram[i]) && (histogram[i + 1] < histogram[i]))
+				{
+					max = true; h_max = histogram[i];
+				}
+				if ((histogram[i - 1] > histogram[i]) && (histogram[i + 1] > histogram[i]))
+				{
+					min = true; h_min = histogram[i];
+				}
+
+				if (min && max && (abs(h_max - h_min) > 254))
+				{
+					k++; max = false; min = false;
+				}
+			}*/
+
+			k = 1;
+			for (int i = 0; i < 12; i++)
+			{
+				srand(time(NULL));
+				int tmp;
+				if ((double)(rand() / RAND_MAX) > 0.9) tmp = 1;
+				else 0;
+				k += tmp;
+			}
+			if (k > 1) k--;
+		}
+		else
+			k = kInput;
+		
 		
 		sizeOfImage = dest.cols * dest.rows;
 		pixels = new PixelOfImage[sizeOfImage]; 
