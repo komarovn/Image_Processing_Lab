@@ -8,7 +8,7 @@ using namespace OTSU;
 
 [STAThread]
 
-void main(array <String^>^args)
+void main(/*array <String^>^args*/)
 {
 	Application::EnableVisualStyles();
 	Application::SetCompatibleTextRenderingDefault(false);

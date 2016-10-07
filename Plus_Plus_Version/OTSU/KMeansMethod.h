@@ -169,7 +169,7 @@ public:
 
 		if (kInput == -2)
 		{
-			/*for (int i = 0; i < tmp_img->Width; i++)
+			for (int i = 0; i < tmp_img->Width; i++)
 				for (int j = 0; j < tmp_img->Height; j++)
 				{
 					int intensity = (int)(
@@ -179,42 +179,14 @@ public:
 					histogram[intensity]++;
 				}
 
-			int sum = 0;
-			for (int i = 0; i < 256; i++)
-			{
-				sum += histogram[i];
-			}
-
-			k = 1;
-			bool max = false, min = false;
-			int h_max, h_min;
-			for (int i = 1; i < 255; i++)
-			{
-				if ((histogram[i - 1] < histogram[i]) && (histogram[i + 1] < histogram[i]))
+			int delta = 10; k = 1;
+			for (int i = delta; i < 256 - delta; i++)
+				if ((histogram[i - delta] < histogram[i]) &&
+					(histogram[i + delta] < histogram[i]))
 				{
-					max = true; h_max = histogram[i];
-				}
-				if ((histogram[i - 1] > histogram[i]) && (histogram[i + 1] > histogram[i]))
-				{
-					min = true; h_min = histogram[i];
+					k++; i = i + delta;
 				}
 
-				if (min && max && (abs(h_max - h_min) > 254))
-				{
-					k++; max = false; min = false;
-				}
-			}*/
-
-			k = 1;
-			for (int i = 0; i < 12; i++)
-			{
-				srand(time(NULL));
-				int tmp;
-				if ((double)(rand() / RAND_MAX) > 0.9) tmp = 1;
-				else 0;
-				k += tmp;
-			}
-			if (k > 1) k--;
 		}
 		else
 			k = kInput;
@@ -313,7 +285,6 @@ public:
 				sumClusterBlue[NumberOfCluster]  += pixels[j].GetB();
 				numElemCluster[NumberOfCluster]++;
 			}
-
 			for (int i = 0; i < k; i++)
 			{
 				averageRed[i]   = (double)(sumClusterRed[i]  ) / (double)(numElemCluster[i]);		// среднее Red канала в кластере   i
