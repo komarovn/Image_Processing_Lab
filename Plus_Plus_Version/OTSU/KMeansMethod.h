@@ -169,6 +169,31 @@ public:
 
 		if (kInput == -2)
 		{
+			
+			//-----------------------------------------------------//
+			// Box - фильтр
+			//-----------------------------------------------------//
+			int m = 3, n = 3;
+			for (int i = m; i < tmp_img->Width - m; i++)
+				for (int j = n; j < tmp_img->Height - n; j++)
+				{
+					int sumR = 0, sumG = 0, sumB = 0;
+					for (int k = -m ; k < m; k++)
+						for (int l = -n; l < n; l++)
+						{
+							sumR += tmp_img->GetPixel(i + k, j + l).R;
+							sumG += tmp_img->GetPixel(i + k, j + l).G;
+							sumB += tmp_img->GetPixel(i + k, j + l).B;
+						}
+					sumR = (int)(sumR / ((2 * m + 1) * (2 * n + 1)));
+					sumG = (int)(sumG / ((2 * m + 1) * (2 * n + 1)));
+					sumB = (int)(sumB / ((2 * m + 1) * (2 * n + 1)));
+					Color tmp_color; tmp_color.FromArgb(sumR, sumG, sumB);
+					tmp_img->SetPixel(i, j, tmp_color);
+				}
+			//-----------------------------------------------------//
+			// Подсчет гистограммы
+			//-----------------------------------------------------//
 			for (int i = 0; i < tmp_img->Width; i++)
 				for (int j = 0; j < tmp_img->Height; j++)
 				{
@@ -177,16 +202,18 @@ public:
 						0.7152 * tmp_img->GetPixel(i, j).G +
 						0.0722 * tmp_img->GetPixel(i, j).B);
 					histogram[intensity]++;
-				}
-
+				}			
+			//-----------------------------------------------------//
+			// Поиск количества пиков
+			//-----------------------------------------------------//
 			int delta = 10; k = 1;
 			for (int i = delta; i < 256 - delta; i++)
-				if ((histogram[i - delta] < histogram[i]) &&
-					(histogram[i + delta] < histogram[i]))
-				{
-					k++; i = i + delta;
-				}
-
+			if ((histogram[i - delta] < histogram[i]) &&
+			(histogram[i + delta] < histogram[i]))
+			{
+				k++; i = i + delta;
+			}
+			if (k > 1) k--;
 		}
 		else
 			k = kInput;
