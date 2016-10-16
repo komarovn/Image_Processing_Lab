@@ -3,8 +3,10 @@
 #include "ImageProcessing.h"
 #include "OtsuMethod.h"
 #include "KMeansMethod.h"
+#include "Downsampling.h"
 
 #include "KMeansForm1.h"
+#include "DownsamplingForm.h"
 
 namespace OTSU{
 
@@ -23,7 +25,11 @@ namespace OTSU{
 	public:
 		Bitmap ^image;
 		String ^filename;
-		static KMeansForm ^kMeansDialogBox = gcnew KMeansForm(); 
+	private: System::Windows::Forms::ToolStripMenuItem^  resamplingToolStripMenuItem;
+	public: 
+	private: System::Windows::Forms::ToolStripMenuItem^  downsamplingToolStripMenuItem;
+			 static KMeansForm ^kMeansDialogBox = gcnew KMeansForm(); 
+			 static DownsamplingForm ^downsamplingDialogBox = gcnew DownsamplingForm();
 
 	public:
 		REDACTOR(void)
@@ -81,9 +87,11 @@ namespace OTSU{
 			this->ìåòîäûToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->áèíîðèçàöèÿToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->ìåòîäÎòñóToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->segmentationToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->kMeansMethodToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->resamplingToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->downsamplingToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->PCTB_Central_image))->BeginInit();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -132,8 +140,8 @@ namespace OTSU{
 			// 
 			// ìåòîäûToolStripMenuItem
 			// 
-			this->ìåòîäûToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->áèíîðèçàöèÿToolStripMenuItem, 
-				this->segmentationToolStripMenuItem});
+			this->ìåòîäûToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {this->áèíîðèçàöèÿToolStripMenuItem, 
+				this->segmentationToolStripMenuItem, this->resamplingToolStripMenuItem});
 			this->ìåòîäûToolStripMenuItem->Name = L"ìåòîäûToolStripMenuItem";
 			this->ìåòîäûToolStripMenuItem->Size = System::Drawing::Size(66, 20);
 			this->ìåòîäûToolStripMenuItem->Text = L"Methods";
@@ -154,14 +162,6 @@ namespace OTSU{
 			this->ìåòîäÎòñóToolStripMenuItem->Text = L"Otsu Method";
 			this->ìåòîäÎòñóToolStripMenuItem->Click += gcnew System::EventHandler(this, &REDACTOR::ìåòîäÎòñóToolStripMenuItem_Click);
 			// 
-			// label1
-			// 
-			this->label1->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
-			this->label1->Location = System::Drawing::Point(0, 24);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(872, 1);
-			this->label1->TabIndex = 3;
-			// 
 			// segmentationToolStripMenuItem
 			// 
 			this->segmentationToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->kMeansMethodToolStripMenuItem});
@@ -177,6 +177,30 @@ namespace OTSU{
 			this->kMeansMethodToolStripMenuItem->Size = System::Drawing::Size(238, 22);
 			this->kMeansMethodToolStripMenuItem->Text = L"k-Means Method";
 			this->kMeansMethodToolStripMenuItem->Click += gcnew System::EventHandler(this, &REDACTOR::kMeansMethodToolStripMenuItem_Click);
+			// 
+			// label1
+			// 
+			this->label1->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			this->label1->Location = System::Drawing::Point(0, 24);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(872, 1);
+			this->label1->TabIndex = 3;
+			// 
+			// resamplingToolStripMenuItem
+			// 
+			this->resamplingToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->downsamplingToolStripMenuItem});
+			this->resamplingToolStripMenuItem->Name = L"resamplingToolStripMenuItem";
+			this->resamplingToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->resamplingToolStripMenuItem->Text = L"Resampling";
+			// 
+			// downsamplingToolStripMenuItem
+			// 
+			this->downsamplingToolStripMenuItem->Name = L"downsamplingToolStripMenuItem";
+			this->downsamplingToolStripMenuItem->ShortcutKeys = static_cast<System::Windows::Forms::Keys>(((System::Windows::Forms::Keys::Control | System::Windows::Forms::Keys::Shift) 
+				| System::Windows::Forms::Keys::D));
+			this->downsamplingToolStripMenuItem->Size = System::Drawing::Size(228, 22);
+			this->downsamplingToolStripMenuItem->Text = L"Downsampling";
+			this->downsamplingToolStripMenuItem->Click += gcnew System::EventHandler(this, &REDACTOR::downsamplingToolStripMenuItem_Click);
 			// 
 			// REDACTOR
 			// 
@@ -287,6 +311,18 @@ private: System::Void kMeansMethodToolStripMenuItem_Click(System::Object^  sende
 				 KMeansMethod* kMeansMethod = new KMeansMethod(filename, k);
 				 PCTB_Central_image->Image = kMeansMethod->OutputImage();
 				 delete kMeansMethod;
+			 }
+		 }
+private: System::Void downsamplingToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+			 downsamplingDialogBox->originWidth = image->Width;
+			 downsamplingDialogBox->originHeight = image->Height;
+			 downsamplingDialogBox->ShowDialog();
+			 int width = downsamplingDialogBox->width;
+			 int height = downsamplingDialogBox->height;
+			 if(width > 0 && height > 0)
+			 {
+				 Downsampling* downsampling = new Downsampling(width, height);
+				 delete downsampling;
 			 }
 		 }
 };

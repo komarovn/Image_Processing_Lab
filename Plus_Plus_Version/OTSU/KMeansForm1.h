@@ -121,9 +121,10 @@ namespace OTSU {
 			this->Controls->Add(this->cancelButton);
 			this->Controls->Add(this->inputKButton);
 			this->Controls->Add(this->inputKTextBox);
-			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::SizableToolWindow;
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedToolWindow;
 			this->Name = L"KMeansForm";
 			this->Text = L"Parameters";
+			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &KMeansForm::KMeansForm_FormClosed);
 			this->Load += gcnew System::EventHandler(this, &KMeansForm::KMeansForm_Load);
 			this->ResumeLayout(false);
 			this->PerformLayout();
@@ -166,6 +167,9 @@ private: System::Void autoValueCheckBox_CheckedChanged(System::Object^  sender, 
 				 inputKTextBox->ReadOnly = true;
 			 else
 				 inputKTextBox->ReadOnly = false;
+		 }
+private: System::Void KMeansForm_FormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e) {
+			 k = -1;
 		 }
 };
 }
