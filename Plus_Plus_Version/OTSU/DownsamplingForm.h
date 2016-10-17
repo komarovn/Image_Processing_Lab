@@ -236,8 +236,8 @@ private: System::Void heightTextBox_KeyUp(System::Object^  sender, System::Windo
 			 }
 		 }
 private: System::Void DownsamplingForm_FormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e) {
-			 width = -1;
-			 height = -1;
+			 //width = -1;
+			 //height = -1;
 		 }
 };
 }

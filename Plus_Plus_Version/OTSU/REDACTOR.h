@@ -321,7 +321,8 @@ private: System::Void downsamplingToolStripMenuItem_Click(System::Object^  sende
 			 int height = downsamplingDialogBox->height;
 			 if(width > 0 && height > 0)
 			 {
-				 Downsampling* downsampling = new Downsampling(width, height);
+				 Downsampling* downsampling = new Downsampling(width, height, SystemToStl(filename));
+				 PCTB_Central_image->Image = downsampling->getImage();
 				 delete downsampling;
 			 }
 		 }
