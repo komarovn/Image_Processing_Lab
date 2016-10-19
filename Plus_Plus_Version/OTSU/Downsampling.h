@@ -26,7 +26,9 @@ public:
 	void gaussianBlur() 
 	{
 		cv::Mat dest = image;
-		cv::GaussianBlur(image, dest, cv::Size(13, 13), 0, 0);
+		double sigma = gaussÑoeff();
+		int delta = static_cast<int>(5);
+		cv::GaussianBlur(image, dest, cv::Size(delta, delta), sigma, 0);
 		image = dest;
 	}
 
@@ -45,6 +47,42 @@ public:
 			}
 		}
 		image = dest;
+	}
+
+	double gaussÑoeff()
+	{
+		int intensity[256];
+
+		for (int i = 0; i < 256; i++)
+			intensity[i] = 0;
+
+		for (int i = 0; i < image.cols; i++)
+		{
+			for (int j = 0; j < image.rows; j++)
+			{
+				int red = image.at<cv::Vec3b>(j, i)[2];
+				int green = image.at<cv::Vec3b>(j, i)[1];
+				int blue = image.at<cv::Vec3b>(j, i)[0];
+				int ints = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+				intensity[ints]++;
+			}
+		}
+
+		double mExp = 0;
+		int num = 0;
+		for (int i = 0; i < 256; i++)
+		{
+			mExp += i * intensity[i];
+			num += intensity[i];
+		}
+		mExp = mExp / num;
+
+		double disp = 0;
+		for (int i = 0; i < 256; i++)
+			disp += intensity[i] * (i - mExp) * (i - mExp);
+		disp = disp / num;
+		double sigma = sqrt(disp * (num / (num - 1)));
+		return sigma;
 	}
 
 	Bitmap ^getImage()
