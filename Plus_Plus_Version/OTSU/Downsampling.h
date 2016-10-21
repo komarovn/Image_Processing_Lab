@@ -26,11 +26,18 @@ public:
 	void gaussianBlur() 
 	{
 		cv::Mat dest = image;
-		double sigma = gaussСoeff();
+		double sigma = gaussCoeff();
 
-		int delta = GetDelta(sigma,0.2);//0.2-сигмовый интервал
+		//int delta = GetDelta(sigma, 0.2); //0.2-сигмовый интервал
 
-		cv::GaussianBlur(image, dest, cv::Size(delta, delta), sigma, 0);
+		int widthCoeff = oldWidth / newWidth;
+		int heightCoeff = oldHeight / newHeight;
+		if(widthCoeff % 2 == 0)
+			widthCoeff += 1;
+		if(heightCoeff % 2 == 0)
+			heightCoeff += 1;
+
+		cv::GaussianBlur(image, dest, cv::Size(widthCoeff, heightCoeff), sigma, sigma);
 		image = dest;
 	}
 
@@ -60,7 +67,7 @@ public:
 		return Int_Sigma;
 	}
 
-	double gaussСoeff()
+	double gaussCoeff()
 	{
 		int intensity[256];
 
