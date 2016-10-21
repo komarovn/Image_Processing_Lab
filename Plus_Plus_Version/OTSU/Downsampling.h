@@ -99,9 +99,9 @@ public:
 		int green;
 		int blue;
 		Color c;
-		for(int i = 0; i < image.cols; i++)
+		for (int i = 1; i < image.cols; i++)
 		{
-			for(int j = 0; j < image.rows; j++)
+			for (int j = 1; j < image.rows; j++)
 			{
 				red = image.at<cv::Vec3b>(j, i)[2];
 				green = image.at<cv::Vec3b>(j, i)[1];
