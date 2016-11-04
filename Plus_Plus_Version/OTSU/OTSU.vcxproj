@@ -212,6 +212,7 @@
     <ClInclude Include="DownsamplingForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="Fourier.h" />
     <ClInclude Include="KMeansForm1.h">
       <FileType>CppForm</FileType>
     </ClInclude>

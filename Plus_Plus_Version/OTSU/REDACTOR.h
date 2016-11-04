@@ -4,6 +4,7 @@
 #include "OtsuMethod.h"
 #include "KMeansMethod.h"
 #include "Downsampling.h"
+#include "Fourier.h"
 
 #include "KMeansForm1.h"
 #include "DownsamplingForm.h"
@@ -29,6 +30,7 @@ namespace OTSU{
 	public: 
 	private: System::Windows::Forms::ToolStripMenuItem^  downsamplingToolStripMenuItem;
 			 static KMeansForm ^kMeansDialogBox = gcnew KMeansForm(); 
+	private: System::Windows::Forms::ToolStripMenuItem^  fourierTransformToolStripMenuItem;
 			 static DownsamplingForm ^downsamplingDialogBox = gcnew DownsamplingForm();
 
 	public:
@@ -89,9 +91,10 @@ namespace OTSU{
 			this->ìåòîäÎòñóToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->segmentationToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->kMeansMethodToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->resamplingToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->downsamplingToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->fourierTransformToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->PCTB_Central_image))->BeginInit();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -140,8 +143,8 @@ namespace OTSU{
 			// 
 			// ìåòîäûToolStripMenuItem
 			// 
-			this->ìåòîäûToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {this->áèíîðèçàöèÿToolStripMenuItem, 
-				this->segmentationToolStripMenuItem, this->resamplingToolStripMenuItem});
+			this->ìåòîäûToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {this->áèíîðèçàöèÿToolStripMenuItem, 
+				this->segmentationToolStripMenuItem, this->resamplingToolStripMenuItem, this->fourierTransformToolStripMenuItem});
 			this->ìåòîäûToolStripMenuItem->Name = L"ìåòîäûToolStripMenuItem";
 			this->ìåòîäûToolStripMenuItem->Size = System::Drawing::Size(66, 20);
 			this->ìåòîäûToolStripMenuItem->Text = L"Methods";
@@ -150,7 +153,7 @@ namespace OTSU{
 			// 
 			this->áèíîðèçàöèÿToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->ìåòîäÎòñóToolStripMenuItem});
 			this->áèíîðèçàöèÿToolStripMenuItem->Name = L"áèíîðèçàöèÿToolStripMenuItem";
-			this->áèíîðèçàöèÿToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->áèíîðèçàöèÿToolStripMenuItem->Size = System::Drawing::Size(240, 22);
 			this->áèíîðèçàöèÿToolStripMenuItem->Text = L"Binarization";
 			// 
 			// ìåòîäÎòñóToolStripMenuItem
@@ -166,7 +169,7 @@ namespace OTSU{
 			// 
 			this->segmentationToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->kMeansMethodToolStripMenuItem});
 			this->segmentationToolStripMenuItem->Name = L"segmentationToolStripMenuItem";
-			this->segmentationToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->segmentationToolStripMenuItem->Size = System::Drawing::Size(240, 22);
 			this->segmentationToolStripMenuItem->Text = L"Segmentation";
 			// 
 			// kMeansMethodToolStripMenuItem
@@ -178,19 +181,11 @@ namespace OTSU{
 			this->kMeansMethodToolStripMenuItem->Text = L"k-Means Method";
 			this->kMeansMethodToolStripMenuItem->Click += gcnew System::EventHandler(this, &REDACTOR::kMeansMethodToolStripMenuItem_Click);
 			// 
-			// label1
-			// 
-			this->label1->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
-			this->label1->Location = System::Drawing::Point(0, 24);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(872, 1);
-			this->label1->TabIndex = 3;
-			// 
 			// resamplingToolStripMenuItem
 			// 
 			this->resamplingToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->downsamplingToolStripMenuItem});
 			this->resamplingToolStripMenuItem->Name = L"resamplingToolStripMenuItem";
-			this->resamplingToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->resamplingToolStripMenuItem->Size = System::Drawing::Size(240, 22);
 			this->resamplingToolStripMenuItem->Text = L"Resampling";
 			// 
 			// downsamplingToolStripMenuItem
@@ -201,6 +196,23 @@ namespace OTSU{
 			this->downsamplingToolStripMenuItem->Size = System::Drawing::Size(228, 22);
 			this->downsamplingToolStripMenuItem->Text = L"Downsampling";
 			this->downsamplingToolStripMenuItem->Click += gcnew System::EventHandler(this, &REDACTOR::downsamplingToolStripMenuItem_Click);
+			// 
+			// label1
+			// 
+			this->label1->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			this->label1->Location = System::Drawing::Point(0, 24);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(872, 1);
+			this->label1->TabIndex = 3;
+			// 
+			// fourierTransformToolStripMenuItem
+			// 
+			this->fourierTransformToolStripMenuItem->Name = L"fourierTransformToolStripMenuItem";
+			this->fourierTransformToolStripMenuItem->ShortcutKeys = static_cast<System::Windows::Forms::Keys>(((System::Windows::Forms::Keys::Control | System::Windows::Forms::Keys::Shift) 
+				| System::Windows::Forms::Keys::F));
+			this->fourierTransformToolStripMenuItem->Size = System::Drawing::Size(240, 22);
+			this->fourierTransformToolStripMenuItem->Text = L"Fourier Transform";
+			this->fourierTransformToolStripMenuItem->Click += gcnew System::EventHandler(this, &REDACTOR::fourierTransformToolStripMenuItem_Click);
 			// 
 			// REDACTOR
 			// 
@@ -325,6 +337,13 @@ private: System::Void downsamplingToolStripMenuItem_Click(System::Object^  sende
 				 PCTB_Central_image->Image = downsampling->getImage();
 				 delete downsampling;
 			 }
+		 }
+private: System::Void fourierTransformToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+			 Fourier* fourier = new Fourier(SystemToStl(filename));
+			fourier->FourierTransform();
+			fourier->InverseFourierTransform();
+			PCTB_Central_image->Image = fourier->getImage();
+			delete fourier;
 		 }
 };
 }
