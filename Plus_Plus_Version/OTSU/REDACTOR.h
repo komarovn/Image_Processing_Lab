@@ -5,6 +5,7 @@
 #include "KMeansMethod.h"
 #include "Downsampling.h"
 #include "Fourier.h"
+#include "FourierImage.h"
 
 #include "KMeansForm1.h"
 #include "DownsamplingForm.h"
@@ -26,6 +27,8 @@ namespace OTSU{
 	public:
 		Bitmap ^image;
 		String ^filename;
+		FourierImage ^fourierImageForm;
+
 	private: System::Windows::Forms::ToolStripMenuItem^  resamplingToolStripMenuItem;
 	public: 
 	private: System::Windows::Forms::ToolStripMenuItem^  downsamplingToolStripMenuItem;
@@ -36,8 +39,8 @@ namespace OTSU{
 	public:
 		REDACTOR(void)
 		{
-			InitializeComponent();
-			
+			InitializeComponent();	
+			fourierImageForm = gcnew FourierImage();
 		}
 
 	protected:
@@ -339,9 +342,14 @@ private: System::Void downsamplingToolStripMenuItem_Click(System::Object^  sende
 			 }
 		 }
 private: System::Void fourierTransformToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-			 Fourier* fourier = new Fourier(SystemToStl(filename));
-			fourier->FourierTransform();
+			Fourier* fourier = new Fourier(SystemToStl(filename));
+			
+			fourierImageForm->Show();
+			fourierImageForm->pictureBox1->Image = fourier->FourierTransform();
+			fourierImageForm->pictureBox1->Show();
+			
 			fourier->InverseFourierTransform();
+
 			PCTB_Central_image->Image = fourier->getImage();
 			delete fourier;
 		 }
