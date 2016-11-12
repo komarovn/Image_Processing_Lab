@@ -50,14 +50,12 @@ public:
 	Bitmap^ FourierTransform()
 	{
 		double intensity;
+		int k = width * height;
 		int deg = static_cast<int>(log(width * height) / log(2.0)) + 1;
 		int leng = Math::Pow(2, deg);
 		intesnsityMatrix = new vector<complex<double>>(leng);
 
-		for (int i = 0; i < leng; i++) 
-			(*intesnsityMatrix)[i] = 0;
-
-		//int k = 0;
+		/* Задаем матрицу интенсивностей */
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++)
 			{
@@ -66,16 +64,39 @@ public:
 					0.7152 * sourceImage.at<cv::Vec3b>(y, x)[1] +
 					0.0722 * sourceImage.at<cv::Vec3b>(y, x)[0];
 				(*intesnsityMatrix)[y * width + x] = intensity;
-				//k++;
 			}
-		int k = width * height;
+
+		/* Обнуляем оставшиеся элементы матрицы интенсивностей */
+		for (int i = k; i < leng; i++)
+			(*intesnsityMatrix)[i] = 0;
+	
+		/* Применяем быстрое преобразование Фурье */
 		fft(*intesnsityMatrix, false);
 
+		/* Формируем изображение образа преобразования */
 		Bitmap ^outputFourierImage = gcnew Bitmap(width, height);
-		int col;
-		Color color;
 
-		int max = static_cast<int>(Math::Sqrt(Math::Pow((*intesnsityMatrix)[0].real(), 2) +
+		/* Рассчитываем матрицы магнитуд и фаз */
+		int *magnitudes = new int[k];
+		int *phases = new int[k];
+		for (int i = 0; i < k; i++) 
+		{
+			magnitudes[i] = static_cast<int>((*intesnsityMatrix)[i].real());
+			phases[i] = static_cast<int>((*intesnsityMatrix)[i].imag());
+		}
+
+		/* Ищем максимум и минимум у матрицы магнитуд */
+		int max = 0;
+		int min = INT_MAX;
+		for (int i = 0; i < k; i++) 
+		{
+			if (max < magnitudes[i])
+				max = magnitudes[i];
+			if (min > magnitudes[i])
+				min = magnitudes[i];
+		}
+
+		/*int max = static_cast<int>(Math::Sqrt(Math::Pow((*intesnsityMatrix)[0].real(), 2) +
 			Math::Pow((*intesnsityMatrix)[0].imag(), 2)));
 		int min = max;
 		int sqrtOfComplexNumber = 0;
@@ -87,32 +108,36 @@ public:
 				max = sqrtOfComplexNumber;
 			if (min > sqrtOfComplexNumber)
 				min = sqrtOfComplexNumber;
-		}
+		}*/
 
-		int norm = 0;
-		//k = 0;
+		/* Считаем градацию серого и записываем цвет пикселя для изображения образа */
+		int grad;
+		Color color;
+		float coeff = 255 / (float)(max - min);
 		for (int i = 1; i < width; i++)
 		{
 			for (int j = 1; j < height; j++)
 			{
-				col = static_cast<int>((Math::Sqrt(Math::Pow((*intesnsityMatrix)[j * width + i].real(), 2) +
-					Math::Pow((*intesnsityMatrix)[j * width + i].imag(), 2)) - min) / (double)(max - min) * 255);
-				if (col > 255)
+				//grad = static_cast<int>((Math::Sqrt(Math::Pow((*intesnsityMatrix)[j * width + i].real(), 2) +
+				//	Math::Pow((*intesnsityMatrix)[j * width + i].imag(), 2)) - min) / (double)(max - min) * 255);
+				grad = coeff * (magnitudes[j * width + i] - min);
+				/*if (grad > 255)
 				{
 					color = Color::FromArgb(255, 255, 255);
 				}
 				else
 				{
-					if (col < 0)
+					if (grad < 0)
 						color = Color::FromArgb(0, 0, 0);
-					else
-						color = Color::FromArgb(col, col, col);
-				}
+					else*/
+						color = Color::FromArgb(grad, grad, grad);
+				//}
 				outputFourierImage->SetPixel(i, j, color);
-				//k++;
 			}
 		}
 
+		delete [] magnitudes;
+		delete [] phases;
 		return outputFourierImage;
 	}
 
