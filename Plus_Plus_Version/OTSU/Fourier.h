@@ -4,6 +4,7 @@
 #include "FourierImage.h"
 #include <complex>
 #include <vector>
+#include <cmath>
 
 #define PI 3.14159265
 
@@ -47,6 +48,28 @@ public:
 		}
 	}
 
+	/*void DFT()
+	{
+		complex<double> I = sqrt(-1);
+		complex<double> value;
+		complex<double> coeff;
+		for(int k = 0; k < width; k++)
+		{
+			for(int l = 0; l < height; l++)
+			{
+				for(int i = 0; i < width; i++)
+				{
+					for(int j = 0; j < height; j++)
+					{
+						coeff = (-2 * PI * (k * i / width + l * j / height) * I);
+						value = intensityMatrixComplex[j * width + i] * coeff;
+					}
+				}
+				dftMatrix[l * width + k] = value;
+			}
+		}
+	} */
+
 	Bitmap^ FourierTransform()
 	{
 		double intensity;
@@ -63,21 +86,23 @@ public:
 					0.2126 * sourceImage.at<cv::Vec3b>(y, x)[2] +
 					0.7152 * sourceImage.at<cv::Vec3b>(y, x)[1] +
 					0.0722 * sourceImage.at<cv::Vec3b>(y, x)[0];
-				(*intesnsityMatrix)[y * width + x] = intensity;
+				(*intesnsityMatrix)[y * width + x] = complex<double>(intensity, 0);
 			}
 
 		/* Обнуляем оставшиеся элементы матрицы интенсивностей */
 		for (int i = k; i < leng; i++)
-			(*intesnsityMatrix)[i] = 0;
+			(*intesnsityMatrix)[i] = complex<double>(0, 0);
 	
 		/* Применяем быстрое преобразование Фурье */
 		fft(*intesnsityMatrix, false);
+		//DFT();
 
 		/* Формируем изображение образа преобразования */
 		Bitmap ^outputFourierImage = gcnew Bitmap(width, height);
 
 		/* Рассчитываем матрицы магнитуд и фаз */
 		int *magnitudes = new int[k];
+		int *magnitudes2 = new int[k];
 		int *phases = new int[k];
 		for (int i = 0; i < k; i++) 
 		{
@@ -113,14 +138,14 @@ public:
 		/* Считаем градацию серого и записываем цвет пикселя для изображения образа */
 		int grad;
 		Color color;
-		float coeff = 255 / (float)(max - min);
+		float coeff = 255 / (float)log(1 + max);
 		for (int i = 1; i < width; i++)
 		{
 			for (int j = 1; j < height; j++)
 			{
 				//grad = static_cast<int>((Math::Sqrt(Math::Pow((*intesnsityMatrix)[j * width + i].real(), 2) +
 				//	Math::Pow((*intesnsityMatrix)[j * width + i].imag(), 2)) - min) / (double)(max - min) * 255);
-				grad = coeff * (magnitudes[j * width + i] - min);
+				grad = coeff * log(abs(magnitudes[j * width + i]) + 1);
 				/*if (grad > 255)
 				{
 					color = Color::FromArgb(255, 255, 255);
