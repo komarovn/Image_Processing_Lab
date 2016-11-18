@@ -134,7 +134,15 @@ public:
 
 	void InverseFourierTransform()
 	{
-		//fft(*intesnsityMatrix, true);
+		fft(*intesnsityMatrix, true);
+		for(int i = 0; i < width; i++)
+			for(int j = 0; j < height; j++)
+			{
+				int value = (*intesnsityMatrix)[j * width + i].real();
+				outputImage.at<cv::Vec3b>(cv::Point(i, j))[0] = value;
+				outputImage.at<cv::Vec3b>(cv::Point(i, j))[1] = value;
+				outputImage.at<cv::Vec3b>(cv::Point(i, j))[2] = value;
+			}
 	}
 
 	void ÑalculateIntensityMatrix(int leng)
@@ -158,7 +166,7 @@ public:
 
 	Bitmap^ getImage()
 	{
-		Bitmap ^outputImage = gcnew Bitmap(width, height);
+		Bitmap ^outputBitmap = gcnew Bitmap(width, height);
 		int red;
 		int green;
 		int blue;
@@ -167,14 +175,14 @@ public:
 		{
 			for (int j = 1; j < height; j++)
 			{
-				red = sourceImage.at<cv::Vec3b>(j, i)[2];
-				green = sourceImage.at<cv::Vec3b>(j, i)[1];
-				blue = sourceImage.at<cv::Vec3b>(j, i)[0];
+				red = outputImage.at<cv::Vec3b>(j, i)[2];
+				green = outputImage.at<cv::Vec3b>(j, i)[1];
+				blue = outputImage.at<cv::Vec3b>(j, i)[0];
 				c = Color::FromArgb(red, green, blue);
-				outputImage->SetPixel(i, j, c);
+				outputBitmap->SetPixel(i, j, c);
 			}
 		}
-		return outputImage;
+		return outputBitmap;
 	}
 
 	~Fourier() { }
