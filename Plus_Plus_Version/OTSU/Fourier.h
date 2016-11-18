@@ -104,9 +104,10 @@ public:
 		int *magnitudes = new int[k];
 		int *magnitudes2 = new int[k];
 		int *phases = new int[k];
+		float indexCoeff = leng / (float)k;
 		for (int i = 0; i < k; i++) 
 		{
-			magnitudes[i] = static_cast<int>((*intesnsityMatrix)[i].real());
+			magnitudes[i] = static_cast<int>((*intesnsityMatrix)[indexCoeff * i].real());
 			phases[i] = static_cast<int>((*intesnsityMatrix)[i].imag());
 		}
 
@@ -145,7 +146,7 @@ public:
 			{
 				//grad = static_cast<int>((Math::Sqrt(Math::Pow((*intesnsityMatrix)[j * width + i].real(), 2) +
 				//	Math::Pow((*intesnsityMatrix)[j * width + i].imag(), 2)) - min) / (double)(max - min) * 255);
-				grad = coeff * log(abs(magnitudes[j * width + i]) + 1);
+				grad = coeff * (float)log(abs(magnitudes[j * width + i]) + 1);
 				/*if (grad > 255)
 				{
 					color = Color::FromArgb(255, 255, 255);
@@ -159,12 +160,12 @@ public:
 				//}
 				int k = width / 2;
 				int l = height / 2;
-				if(i + k < width)
-					k = i + k;
+				if(i + k <= width)
+					k = i + k - 1;
 				else
 					k = i - k;
-				if(l + j < height)
-					l = j + l;
+				if(l + j <= height)
+					l = j + l - 1;
 				else
 					l = j - l;
 				outputFourierImage->SetPixel(k, l, color);
