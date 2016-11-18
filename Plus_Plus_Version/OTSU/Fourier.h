@@ -157,7 +157,17 @@ public:
 					else*/
 						color = Color::FromArgb(grad, grad, grad);
 				//}
-				outputFourierImage->SetPixel(i, j, color);
+				int k = width / 2;
+				int l = height / 2;
+				if(i + k < width)
+					k = i + k;
+				else
+					k = i - k;
+				if(l + j < height)
+					l = j + l;
+				else
+					l = j - l;
+				outputFourierImage->SetPixel(k, l, color);
 			}
 		}
 
