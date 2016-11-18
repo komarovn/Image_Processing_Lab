@@ -344,8 +344,14 @@ private: System::Void downsamplingToolStripMenuItem_Click(System::Object^  sende
 private: System::Void fourierTransformToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 			Fourier* fourier = new Fourier(SystemToStl(filename));
 			
+			
+			Bitmap ^FT = fourier->FourierTransform();
+			fourierImageForm->Width = FT->Width + 35;
+			fourierImageForm->Height = FT->Height + 60;
 			fourierImageForm->Show();
-			fourierImageForm->pictureBox1->Image = fourier->FourierTransform();
+			fourierImageForm->pictureBox1->Width = FT->Width;
+			fourierImageForm->pictureBox1->Height = FT->Height;
+			fourierImageForm->pictureBox1->Image = FT;
 			fourierImageForm->pictureBox1->Show();
 			
 			fourier->InverseFourierTransform();
